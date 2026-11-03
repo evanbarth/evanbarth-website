@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evan Barth</title>
+  <meta name="description" content="Evan Barth — IT Director. Infrastructure, identity, and security." />
+  <meta name="theme-color" content="#0c0d10" />
+  <meta property="og:title" content="Evan Barth" />
+  <meta property="og:description" content="IT Director. Infrastructure, identity, and security." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='18' fill='%230c0d10'/%3E%3Cpath d='M40 6 70 23v34L40 74 10 57V23Z' fill='none' stroke='%237CF2C4' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M34.8 32.7H26.7V47.3H34.8M26.7 40H33.1 M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='square'/%3E%3Cpath d='M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6' fill='none' stroke='%237CF2C4' stroke-width='2.4'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script>
+    // Runs before first paint so nothing flashes: decides whether to show my boot
+    // screen (once per session) and applies whatever theme the visitor picked last time.
+    (function () {
+      var d = document.documentElement;
+      try {
+        if (!sessionStorage.getItem("booted") && !matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("booting");
+        var T = { mint: ["124 242 196", "167 139 250"], violet: ["167 139 250", "124 242 196"], amber: ["251 191 36", "244 114 182"], rose: ["251 113 133", "129 140 248"], ice: ["125 211 252", "167 139 250"] };
+        var t = T[localStorage.getItem("theme")];
+        if (t) { d.style.setProperty("--a", t[0]); d.style.setProperty("--b", t[1]); }
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    :root {
+      --a: 124 242 196;            /* my mint accent, as RGB */
+      --b: 167 139 250;            /* violet glow that sits behind it */
+      --bg: #0c0d10;
+      --fg: #eceef2;
+      --muted: #8a909c;
+      --accent: rgb(var(--a));
+      --accent-2: rgb(var(--b));
+      --mx: 50vw;
+      --my: 40vh;
+      --display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: rgb(var(--a) / 0.3); }
+
+    /* Soft glow that follows the cursor */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        radial-gradient(520px circle at var(--mx) var(--my), rgb(var(--a) / 0.07), transparent 60%),
+        radial-gradient(900px circle at calc(var(--mx) + 200px) calc(var(--my) + 160px), rgb(var(--b) / 0.05), transparent 65%);
+    }
+
+    /* Film grain so the dark background doesn't look flat */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -50%;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    canvas#field { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+
+    main {
+      position: relative;
+      z-index: 2;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 72px 24px;
+    }
+
+    .card { width: min(100%, 380px); }
+
+    /* ---------- My E₿ logo (tilts toward the cursor) ---------- */
+    .mark {
+      display: block;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 22px;
+      cursor: pointer;
+      filter: drop-shadow(0 0 18px rgb(var(--a) / 0.25));
+      transform: perspective(300px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+      transition: transform 0.25s ease-out, filter 0.4s;
+    }
+    .mark:hover { filter: drop-shadow(0 0 26px rgb(var(--a) / 0.55)); }
+    .mark.spin { animation: spin 0.7s cubic-bezier(.2,.8,.2,1); }
+    @keyframes spin { from { transform: perspective(300px) rotateY(0); } to { transform: perspective(300px) rotateY(360deg); } }
+
+    .mark-hex {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 3;
+      stroke-linejoin: round;
+      stroke-dasharray: 260;
+      stroke-dashoffset: 260;
+      animation: draw 1.4s 0.15s cubic-bezier(.65,0,.35,1) forwards;
+    }
+    .mark-inner { fill: none; stroke: var(--accent-2); stroke-width: 1; opacity: 0; animation: fade 0.8s 1.1s forwards; }
+    .mark-text { fill: none; stroke: var(--fg); stroke-width: 3.4; stroke-linejoin: miter; stroke-linecap: square; opacity: 0; animation: fade 0.6s 0.9s forwards; }
+    /* The two Bitcoin strokes on my B: they draw in last and go BTC orange on hover */
+    .mark-btc {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 1.9;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: draw 0.5s 1.5s ease-out forwards;
+      transition: stroke 0.3s;
+    }
+    .mark:hover .mark-btc { stroke: #f7931a; filter: drop-shadow(0 0 3px #f7931a); }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    @keyframes fade { to { opacity: 1; } }
+
+    /* ---------- Name & status ---------- */
+    h1 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2.4rem, 8vw, 3.1rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      text-align: center;
+      white-space: nowrap;
+      background: linear-gradient(100deg, #fff 30%, var(--accent) 50%, #fff 70%);
+      background-size: 250% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shine 1.6s 1.2s ease-out forwards;
+    }
+    @keyframes shine { to { background-position: 0 0; } }
+
+    .status {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      margin: 12px 0 44px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .theme-btn { all: unset; cursor: pointer; padding: 6px; display: inline-flex; border-radius: 50%; }
+    .theme-btn:focus-visible { outline: 1px dashed var(--accent); }
+    .pulse { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); transition: background 0.4s, transform 0.2s; }
+    .theme-btn:hover .pulse { transform: scale(1.5); }
+    .pulse::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: ping 2s cubic-bezier(0,0,.2,1) infinite;
+    }
+    @keyframes ping { 75%, 100% { transform: scale(3); opacity: 0; } }
+
+    /* ---------- Sections ---------- */
+    section { margin-bottom: 34px; }
+    h2 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.45rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2::before { content: ""; width: 14px; height: 2px; background: var(--accent); box-shadow: 0 0 10px var(--accent); transition: width 0.3s; }
+    section:hover h2::before { width: 22px; }
+
+    ul { list-style: none; }
+    li { padding: 1px 0; }
+    .hl { color: var(--accent); font-weight: 500; text-shadow: 0 0 12px rgb(var(--a) / 0.5); }
+    li.prompt::before { content: "› "; color: var(--accent); opacity: 0.7; }
+
+    /* Little hex between IT Director and Girl Dad, same shape as my logo */
+    .sep { display: inline-block; width: 8px; height: 8px; margin: 0 7px; vertical-align: 0; }
+    .sep svg {
+      width: 100%;
+      height: 100%;
+      fill: rgb(var(--a) / 0);
+      stroke: var(--accent);
+      stroke-width: 1.6;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 4px rgb(var(--a) / 0.7));
+      animation: sep-spin 9s linear infinite;
+      transition: fill 0.3s, filter 0.3s;
+    }
+    li:hover .sep svg { fill: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); animation-duration: 2.5s; }
+    @keyframes sep-spin { to { transform: rotate(360deg); } }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+    /* ---------- Links (they lean toward the cursor) ---------- */
+    .link {
+      --c: var(--accent);
+      all: unset;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 3px 0;
+      color: var(--fg);
+      cursor: pointer;
+      transform: translate(var(--tx, 0px), var(--ty, 0px));
+      transition: color 0.25s, transform 0.3s cubic-bezier(.2,.8,.2,1);
+    }
+    .link svg { width: 16px; height: 16px; flex: none; color: var(--c); transition: transform 0.25s, filter 0.25s; }
+    .link .label {
+      background: linear-gradient(var(--c), var(--c)) no-repeat 0 100% / 0% 1px;
+      transition: background-size 0.35s cubic-bezier(.2,.8,.2,1);
+    }
+    .link .arrow { opacity: 0; transform: translate(-6px, 2px); color: var(--c); transition: opacity 0.25s, transform 0.25s; }
+    .link:hover, .link:focus-visible { color: var(--c); }
+    .link:hover svg, .link:focus-visible svg { transform: scale(1.15) rotate(-6deg); filter: drop-shadow(0 0 6px var(--c)); }
+    .link:hover .label, .link:focus-visible .label { background-size: 100% 1px; }
+    .link:hover .arrow, .link:focus-visible .arrow { opacity: 1; transform: translate(0, 0); }
+    .link:focus-visible { outline: 1px dashed var(--c); outline-offset: 4px; border-radius: 2px; }
+
+    .hint { font-size: 11px; color: var(--muted); margin-left: 4px; transition: opacity 0.3s; }
+    .revealed .hint { opacity: 0; width: 0; overflow: hidden; margin: 0; }
+
+    .copy {
+      all: unset;
+      cursor: pointer;
+      display: none;
+      margin-left: 8px;
+      padding: 1px 7px;
+      border: 1px solid rgb(var(--a) / 0.35);
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--accent);
+      transition: background 0.2s, color 0.2s;
+    }
+    .copy:hover, .copy:focus-visible { background: var(--accent); color: var(--bg); }
+    .copy.show { display: inline-block; animation: fade 0.3s forwards; opacity: 0; }
+
+    footer {
+      margin-top: 52px;
+      font-size: 11px;
+      color: #565b66;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .term-open {
+      all: unset;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px 5px 12px;
+      font-size: 11.5px;
+      color: var(--accent);
+      background: rgb(var(--a) / 0.07);
+      border: 1px solid rgb(var(--a) / 0.4);
+      border-radius: 999px;
+      animation: beacon 3s ease-in-out infinite;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+    .term-open:hover, .term-open:focus-visible { background: var(--accent); color: var(--bg); transform: translateY(-1px); animation: none; box-shadow: 0 0 24px rgb(var(--a) / 0.45); }
+    .term-open:hover kbd, .term-open:focus-visible kbd { border-color: rgb(12 13 16 / 0.4); }
+    .term-icon { font-weight: 500; }
+    .term-open kbd { margin: 0; border-color: rgb(var(--a) / 0.4); }
+    @keyframes beacon {
+      0%, 100% { box-shadow: 0 0 0 0 rgb(var(--a) / 0); }
+      50% { box-shadow: 0 0 16px 1px rgb(var(--a) / 0.28); }
+    }
+    kbd {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 0 5px;
+      margin-right: 4px;
+      border: 1px solid #3a3e47;
+      border-bottom-width: 2px;
+      border-radius: 4px;
+    }
+    .cursor { display: inline-block; width: 7px; height: 12px; background: var(--accent); vertical-align: -1px; margin-left: 3px; animation: blink 1.1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ---------- Toast ---------- */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      z-index: 40;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: var(--bg);
+      background: var(--accent);
+      border-radius: 6px;
+      box-shadow: 0 8px 30px rgb(var(--a) / 0.3);
+      transition: opacity 0.3s, transform 0.3s cubic-bezier(.2,.8,.2,1);
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ---------- Intro: everything fades up one after another ---------- */
+    .rise {
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(4px);
+      animation: rise 0.7s cubic-bezier(.2,.8,.2,1) forwards;
+      animation-delay: calc(0.9s + var(--i, 0) * 0.07s);
+    }
+    @keyframes rise { to { opacity: 1; transform: none; filter: none; } }
+
+    /* Hold the intro until the boot screen is gone, otherwise it plays behind it */
+    html.booting .rise, html.booting .mark-hex, html.booting .mark-inner,
+    html.booting .mark-text, html.booting .mark-btc, html.booting h1 { animation-play-state: paused; }
+
+    /* ---------- Boot screen ---------- */
+    .boot { display: none; }
+    html.booting .boot, .boot.done {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      font-size: 13px;
+      color: var(--muted);
+      transition: opacity 0.5s, filter 0.5s;
+    }
+    .boot.done { opacity: 0; filter: blur(6px); pointer-events: none; }
+    .boot-log { width: min(92vw, 470px); min-height: 220px; }
+    .boot-log div { white-space: pre-wrap; animation: fade 0.12s forwards; opacity: 0; }
+    .boot .ok { color: var(--accent); }
+    .boot .hi { color: var(--fg); font-weight: 500; }
+    .boot .skip { position: absolute; bottom: 28px; font-size: 11px; color: #4a4f59; }
+
+    /* ---------- Terminal ---------- */
+    .term {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      z-index: 30;
+      width: min(94vw, 640px);
+      height: min(72vh, 440px);
+      display: flex;
+      flex-direction: column;
+      background: rgba(14, 15, 19, 0.82);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border: 1px solid rgb(var(--a) / 0.25);
+      border-radius: 12px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03), 0 0 60px rgb(var(--a) / 0.08);
+      transform: translate(-50%, -48%) scale(0.96);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.3s cubic-bezier(.2,.8,.2,1);
+      font-size: 13px;
+    }
+    .term[hidden] { display: none; }
+    .term.open { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .term.shake { animation: shake 0.4s; }
+    @keyframes shake {
+      20%, 60% { transform: translate(calc(-50% - 8px), -50%); }
+      40%, 80% { transform: translate(calc(-50% + 8px), -50%); }
+    }
+    .term-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 12px;
+      user-select: none;
+    }
+    .term-bar .dots { display: flex; gap: 6px; }
+    .term-bar .dots i { width: 11px; height: 11px; border-radius: 50%; background: #3a3e47; }
+    .term-bar .dots i:first-child { background: #ff5f57; cursor: pointer; }
+    .term-bar .dots i:nth-child(2) { background: #febc2e; }
+    .term-bar .dots i:nth-child(3) { background: #28c840; }
+    .term-bar .title { flex: 1; text-align: center; margin-right: 45px; }
+    .term-body { flex: 1; overflow-y: auto; padding: 12px 16px 16px; scrollbar-width: thin; scrollbar-color: #333 transparent; }
+    .term-body div { white-space: pre-wrap; word-break: break-word; }
+    .term form { display: flex; gap: 8px; }
+    .term input {
+      all: unset;
+      flex: 1;
+      color: var(--fg);
+      caret-color: var(--accent);
+    }
+    .ps1 { color: var(--accent); white-space: nowrap; }
+    .t-dim { color: var(--muted); }
+    .t-acc { color: var(--accent); }
+    .t-b { color: var(--accent-2); }
+    .t-err { color: #ff7b8a; }
+    .term a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
+      .mark-hex, .mark-btc { stroke-dashoffset: 0; }
+      h1 { background-position: 0 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="field" aria-hidden="true"></canvas>
+
+  <div class="boot" id="boot" aria-hidden="true">
+    <div class="boot-log" id="boot-log"></div>
+    <div class="skip">press any key to skip</div>
+  </div>
+
+  <main>
+    <div class="card">
+      <svg class="mark" id="mark" viewBox="0 0 80 80" role="img" aria-label="EB monogram">
+        <path class="mark-hex" d="M40 6 70 23v34L40 74 10 57V23Z" />
+        <path class="mark-inner" d="M40 14 63 27v26L40 66 17 53V27Z" />
+        <path class="mark-text" d="M34.8 32.7H26.7V47.3H34.8M26.7 40H33.1 M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7" />
+        <path class="mark-btc" pathLength="1" d="M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6" />
+      </svg>
+
+      <h1 id="name" data-text="Evan Barth">Evan Barth</h1>
+
+      <div class="status rise" style="--i:0">
+        <button class="theme-btn" id="theme-btn" type="button" aria-label="Change accent color" title="Change accent color"><span class="pulse"></span></button>
+        <span>Springfield, MO · <span id="clock">--:--</span> CT</span>
+      </div>
+
+      <section>
+        <h2 class="rise" style="--i:1">Who</h2>
+        <ul>
+          <li class="prompt rise" style="--i:2">IT Director<span class="sep" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M6 1 10.5 3.5v5L6 11 1.5 8.5v-5Z"/></svg></span><span class="sr-only"> and </span>Girl Dad</li>
+          <li class="prompt rise" style="--i:3">Bitcoin &amp; markets nerd</li>
+          <li class="prompt rise" style="--i:4">CS student, forever learning</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="rise" style="--i:5">What</h2>
+        <ul>
+          <li class="prompt rise" style="--i:6">Leading IT Across <span class="hl">20+</span> Locations</li>
+          <li class="prompt rise" style="--i:7">IT Strategy &amp; Infrastructure</li>
+          <li class="prompt rise" style="--i:8">Microsoft 365 &amp; Identity</li>
+          <li class="prompt rise" style="--i:9">Cybersecurity &amp; Automation</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="rise" style="--i:10">Where</h2>
+        <ul>
+          <li class="rise" style="--i:11">
+            <a class="link" data-link="linkedin" href="https://www.linkedin.com/in/evanbarth/" target="_blank" rel="noopener" style="--c:#6cb4ff">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>
+              <span class="label">LinkedIn</span><span class="arrow">↗</span>
+            </a>
+          </li>
+          <li class="rise" style="--i:12">
+            <a class="link" data-link="github" href="https://github.com/evanbarth" target="_blank" rel="noopener" style="--c:#c9a8ff">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg>
+              <span class="label">GitHub</span><span class="arrow">↗</span>
+            </a>
+          </li>
+          <li class="rise" style="--i:13">
+            <button class="link" id="email" type="button" aria-label="Reveal email address">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+              <span class="label" id="email-label">Email</span><span class="hint">click to reveal</span>
+            </button><button class="copy" id="copy" type="button">copy</button>
+          </li>
+        </ul>
+      </section>
+
+      <footer class="rise" style="--i:14">
+        <span>© <span id="year"></span> Evan Barth<span class="cursor" aria-hidden="true"></span></span>
+        <button class="term-open" id="term-open" type="button"><span class="term-icon" aria-hidden="true">&gt;_</span>open terminal<kbd>/</kbd></button>
+      </footer>
+    </div>
+  </main>
+
+  <div class="term" id="term" role="dialog" aria-label="Terminal" hidden>
+    <div class="term-bar">
+      <span class="dots"><i id="term-close" title="Close"></i><i></i><i></i></span>
+      <span class="title">guest@evanbarth: ~</span>
+    </div>
+    <div class="term-body" id="term-body">
+      <div id="term-out"></div>
+      <form id="term-form" autocomplete="off">
+        <label class="ps1" for="term-in">guest@evanbarth:~$</label>
+        <input id="term-in" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Terminal input" />
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (() => {
+    /* =====================================================================
+       CONFIG — my stuff lives here.
+       emailEnc is my address as reversed base64, so the plain address and
+       "@" never show up in the source. If I change inboxes, run this in a
+       browser console and paste the output back in:
+         btoa("new@evanbarth.com").split("").reverse().join("")
+       ===================================================================== */
+    const CONFIG = {
+      emailEnc: "t92YugGdyFmYuFmdl5CbpFWbAVmclhGd5VGa",
+      host: "evanbarth.com",
+      role: "IT Director",
+      region: "Springfield, Missouri, USA",
+      stack: "M365 · Entra ID · Windows Server · Networking",
+      focus: "Infrastructure, identity, security, automation",
+      bio: "IT Director in Springfield, Missouri. I lead operations for a multi-company organization with 20+ locations. Also in school for a BS in Computer Science.",
+      tz: "America/Chicago",
+    };
+
+    const THEMES = {
+      mint:   { a: [124, 242, 196], b: [167, 139, 250] },
+      violet: { a: [167, 139, 250], b: [124, 242, 196] },
+      amber:  { a: [251, 191, 36],  b: [244, 114, 182] },
+      rose:   { a: [251, 113, 133], b: [129, 140, 248] },
+      ice:    { a: [125, 211, 252], b: [167, 139, 250] },
+    };
+
+    const root = document.documentElement;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const finePointer = matchMedia("(pointer: fine)").matches;
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const loadedAt = Date.now();
+    $("#year").textContent = new Date().getFullYear();
+
+    /* ---------- Themes: the pulsing dot cycles these.
+       If I add one here, add it to the <head> script too or it flashes on load. ---------- */
+    let themeName = "mint";
+    try { if (THEMES[localStorage.getItem("theme")]) themeName = localStorage.getItem("theme"); } catch {}
+    let ACC = THEMES[themeName].a;
+    function setTheme(name) {
+      const t = THEMES[name];
+      if (!t) return false;
+      themeName = name;
+      ACC = t.a;
+      root.style.setProperty("--a", t.a.join(" "));
+      root.style.setProperty("--b", t.b.join(" "));
+      try { localStorage.setItem("theme", name); } catch {}
+      return true;
+    }
+    $("#theme-btn").addEventListener("click", (e) => {
+      const names = Object.keys(THEMES);
+      setTheme(names[(names.indexOf(themeName) + 1) % names.length]);
+      const r = e.currentTarget.getBoundingClientRect();
+      ripple(r.left + r.width / 2, r.top + r.height / 2);
+      toast("Theme: " + themeName);
+    });
+
+    /* ---------- Text scramble (my name on load, the email on reveal) ---------- */
+    const GLYPHS = "!<>-_\\/[]{}=+*^?#%01ABCDEFX";
+    const rand = () => GLYPHS[(Math.random() * GLYPHS.length) | 0];
+    function scramble(el, to, duration = 900) {
+      if (reduce) { el.textContent = to; return Promise.resolve(); }
+      const from = el.textContent;
+      const len = Math.max(from.length, to.length);
+      const start = performance.now();
+      return new Promise((resolve) => {
+        (function frame(now) {
+          const p = Math.min(1, (now - start) / duration);
+          let out = "";
+          for (let i = 0; i < len; i++) {
+            const settle = (i / len) * 0.7 + 0.3;
+            if (p >= settle) out += to[i] ?? "";
+            else if (p > settle - 0.35) out += rand();
+            else out += from[i] ?? "";
+          }
+          el.textContent = out;
+          p < 1 ? requestAnimationFrame(frame) : resolve();
+        })(start);
+      });
+    }
+
+    const nameEl = $("#name");
+    if (!reduce) nameEl.textContent = nameEl.dataset.text.replace(/\S/g, rand);
+
+    /* ---------- Clock: my local time, Central ---------- */
+    const fmt = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: CONFIG.tz });
+    const tick = () => ($("#clock").textContent = fmt.format(new Date()));
+    tick(); setInterval(tick, 15000);
+
+    /* ---------- Toast ---------- */
+    let toastTimer;
+    function toast(msg) {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+    }
+
+    /* ---------- Email: only decoded when someone actually clicks ---------- */
+    const decode = () => atob(CONFIG.emailEnc.split("").reverse().join(""));
+    const emailBtn = $("#email"), copyBtn = $("#copy");
+    let revealed = false;
+    async function copy(text) {
+      try { await navigator.clipboard.writeText(text); toast("Copied to clipboard"); }
+      catch { toast(text); }
+    }
+    async function revealEmail() {
+      if (revealed) return;
+      revealed = true;
+      const addr = decode();
+      emailBtn.classList.add("revealed");
+      emailBtn.setAttribute("aria-label", "Send email to " + addr);
+      await scramble($("#email-label"), addr, 700);
+      copyBtn.classList.add("show");
+    }
+    emailBtn.addEventListener("click", () => (revealed ? (location.href = "mailto:" + decode()) : revealEmail()));
+    copyBtn.addEventListener("click", () => copy(decode()));
+
+    /* ---------- Magnetic links + 3D monogram ---------- */
+    if (finePointer && !reduce) {
+      document.querySelectorAll(".link").forEach((el) => {
+        el.addEventListener("pointermove", (e) => {
+          const r = el.getBoundingClientRect();
+          el.style.setProperty("--tx", (e.clientX - (r.left + r.width / 2)) * 0.12 + 4 + "px");
+          el.style.setProperty("--ty", (e.clientY - (r.top + r.height / 2)) * 0.3 + "px");
+        });
+        el.addEventListener("pointerleave", () => { el.style.setProperty("--tx", "0px"); el.style.setProperty("--ty", "0px"); });
+      });
+    }
+    const mark = $("#mark");
+    function tilt(e) {
+      const r = mark.getBoundingClientRect();
+      const dx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / 320));
+      const dy = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / 320));
+      mark.style.setProperty("--ry", dx * 28 + "deg");
+      mark.style.setProperty("--rx", -dy * 28 + "deg");
+    }
+
+    /* ---------- Dot field + click shockwaves ---------- */
+    const canvas = $("#field");
+    const ctx = canvas.getContext("2d");
+    const GAP = 26, RADIUS = 170, GREY = [200, 205, 215];
+    let W, H, dpr, dots = [], ripples = [];
+    const mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999 };
+    let matrixUntil = 0, drops = [];
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      dots = [];
+      for (let y = GAP / 2; y < H; y += GAP)
+        for (let x = GAP / 2; x < W; x += GAP) dots.push({ x, y });
+      drops = Array.from({ length: Math.ceil(W / 16) }, () => Math.random() * -H / 16);
+      if (reduce) draw(0);
+    }
+
+    function ripple(x, y) { if (!reduce) ripples.push({ x, y, t: performance.now() }); }
+
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      mouse.x += (mouse.tx - mouse.x) * 0.12;
+      mouse.y += (mouse.ty - mouse.y) * 0.12;
+      if (t < matrixUntil) return drawMatrix();
+
+      ripples = ripples.filter((r) => t - r.t < 1600);
+      for (const d of dots) {
+        let x = d.x, y = d.y;
+        const dx = d.x - mouse.x, dy = d.y - mouse.y;
+        const dist = Math.hypot(dx, dy);
+        let k = Math.max(0, 1 - dist / RADIUS);
+        if (dist) { const push = k * k * 10; x += (dx / dist) * push; y += (dy / dist) * push; }
+
+        for (const r of ripples) {
+          const age = (t - r.t) / 1000;
+          const rx = d.x - r.x, ry = d.y - r.y;
+          const rd = Math.hypot(rx, ry);
+          const band = 1 - Math.abs(rd - age * 560) / 46;
+          if (band > 0 && rd) {
+            const s = band * (1 - age / 1.6);
+            k = Math.min(1, k + s);
+            x += (rx / rd) * s * 9; y += (ry / rd) * s * 9;
+          }
+        }
+
+        const wave = reduce ? 0 : Math.sin(t * 0.0008 + d.x * 0.012 + d.y * 0.009) * 0.5 + 0.5;
+        const a = 0.07 + wave * 0.06 + k * 0.65;
+        const c0 = GREY[0] + (ACC[0] - GREY[0]) * Math.min(1, k * 2.5);
+        const c1 = GREY[1] + (ACC[1] - GREY[1]) * Math.min(1, k * 2.5);
+        const c2 = GREY[2] + (ACC[2] - GREY[2]) * Math.min(1, k * 2.5);
+        ctx.fillStyle = `rgba(${c0 | 0},${c1 | 0},${c2 | 0},${a})`;
+        ctx.beginPath(); ctx.arc(x, y, 0.9 + k * 1.4, 0, 6.283); ctx.fill();
+      }
+    }
+
+    function drawMatrix() {
+      ctx.font = "14px JetBrains Mono, monospace";
+      const [r, g, b] = ACC;
+      for (let i = 0; i < drops.length; i++) {
+        const x = i * 16, y = drops[i] * 16;
+        for (let j = 0; j < 14; j++) {
+          ctx.fillStyle = `rgba(${r},${g},${b},${j === 0 ? 0.95 : 0.5 - j * 0.035})`;
+          ctx.fillText(rand(), x, y - j * 16);
+        }
+        drops[i] += 0.5 + (i % 3) * 0.2;
+        if (y - 220 > H) drops[i] = Math.random() * -20;
+      }
+    }
+
+    function loop(t) { draw(t); requestAnimationFrame(loop); }
+
+    addEventListener("resize", resize);
+    addEventListener("pointermove", (e) => {
+      mouse.tx = e.clientX; mouse.ty = e.clientY;
+      root.style.setProperty("--mx", e.clientX + "px");
+      root.style.setProperty("--my", e.clientY + "px");
+      if (finePointer && !reduce) tilt(e);
+    });
+    addEventListener("pointerleave", () => { mouse.tx = mouse.ty = -9999; });
+    addEventListener("pointerdown", (e) => {
+      if (e.target.closest("a, button, input, .term, .boot")) return;
+      ripple(e.clientX, e.clientY);
+    });
+    resize();
+    if (!reduce) requestAnimationFrame(loop);
+
+    /* ---------- Easter egg: matrix rain (Konami code, or 5 quick clicks on my logo) ---------- */
+    function matrix() {
+      if (reduce) return false;
+      drops = drops.map(() => Math.random() * -30);
+      matrixUntil = performance.now() + 6000;
+      return true;
+    }
+    const KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
+    let kpos = 0, clicks = 0, clickTimer;
+    addEventListener("keydown", (e) => {
+      if (e.target === termIn) return;
+      kpos = e.key === KONAMI[kpos] ? kpos + 1 : (e.key === KONAMI[0] ? 1 : 0);
+      if (kpos === KONAMI.length) { kpos = 0; if (matrix()) toast("Wake up, Neo…"); }
+    });
+    mark.addEventListener("click", () => {
+      mark.classList.remove("spin"); void mark.offsetWidth; mark.classList.add("spin");
+      const r = mark.getBoundingClientRect();
+      ripple(r.left + r.width / 2, r.top + r.height / 2);
+      clearTimeout(clickTimer);
+      if (++clicks >= 5) { clicks = 0; if (matrix()) toast("Wake up, Neo…"); }
+      clickTimer = setTimeout(() => (clicks = 0), 1200);
+    });
+
+    /* ---------- Terminal. Anything with `true` as the 3rd item is a secret,
+       so it works but stays out of help and tab completion. ---------- */
+    const term = $("#term"), termOut = $("#term-out"), termIn = $("#term-in"), termBody = $("#term-body");
+    const hist = []; let hpos = 0, greeted = false;
+    const link = (k) => document.querySelector(`[data-link="${k}"]`).href;
+
+    function print(html = "") {
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      termOut.appendChild(div);
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+    function shake() { term.classList.remove("shake"); void term.offsetWidth; term.classList.add("shake"); }
+    function uptime() {
+      const s = Math.floor((Date.now() - loadedAt) / 1000);
+      return `${Math.floor(s / 3600)}h ${Math.floor(s / 60) % 60}m ${s % 60}s`;
+    }
+
+    const COMMANDS = {
+      help: ["show this list", () => {
+        print('<span class="t-dim">Available commands:</span>');
+        for (const [name, [desc, , hidden]] of Object.entries(COMMANDS))
+          if (!hidden) print(`  <span class="t-acc">${name.padEnd(10)}</span><span class="t-dim">${desc}</span>`);
+        print('<span class="t-dim">Tip: Tab completes, ↑/↓ recalls history, Esc closes.</span>');
+      }],
+      howdy: ["say hi", () => print("Howdy, partner 🤠  Type <span class=\"t-acc\">email</span> if you want to say it back.")],
+      whoami: ["about me", () => print(esc(CONFIG.bio))],
+      neofetch: ["system info", () => {
+        const L = [
+          `<span class="t-acc">     ______     </span>`,
+          `<span class="t-acc">    /      \\    </span>`,
+          `<span class="t-acc">   /   </span><b>EB</b><span class="t-acc">   \\   </span>`,
+          `<span class="t-acc">   \\        /   </span>`,
+          `<span class="t-acc">    \\______/    </span>`,
+          ``, ``, ``, ``,
+        ];
+        const R = [
+          `<span class="t-acc">guest</span>@<span class="t-acc">${esc(CONFIG.host)}</span>`,
+          `<span class="t-dim">${"-".repeat(CONFIG.host.length + 6)}</span>`,
+          `<span class="t-b">Role</span>    ${esc(CONFIG.role)}`,
+          `<span class="t-b">Region</span>  ${esc(CONFIG.region)}`,
+          `<span class="t-b">Stack</span>   ${esc(CONFIG.stack)}`,
+          `<span class="t-b">Focus</span>   ${esc(CONFIG.focus)}`,
+          `<span class="t-b">Uptime</span>  ${uptime()} <span class="t-dim">(this visit)</span>`,
+          `<span class="t-b">Theme</span>   ${themeName}`,
+          `${Object.keys(THEMES).map((n) => `<span style="color:rgb(${THEMES[n].a.join(",")})">███</span>`).join("")}`,
+        ];
+        print(R.map((r, i) => (L[i] || "                ") + "  " + r).join("\n"));
+      }],
+      ls: ["list links", () => print(
+        `<a href="${esc(link("linkedin"))}" target="_blank" rel="noopener">linkedin</a>   ` +
+        `<a href="${esc(link("github"))}" target="_blank" rel="noopener">github</a>   ` +
+        `<span class="t-acc">email</span>`)],
+      open: ["open linkedin | github", (args) => {
+        const k = (args[0] || "").toLowerCase();
+        if (k === "linkedin" || k === "github") { print(`<span class="t-dim">Opening ${k}…</span>`); window.open(link(k), "_blank", "noopener"); }
+        else if (k === "email") COMMANDS.email[1]();
+        else print('<span class="t-err">usage: open linkedin | github | email</span>');
+      }],
+      email: ["reveal + copy my email", () => {
+        const addr = decode();
+        print(`<a href="mailto:${esc(addr)}">${esc(addr)}</a> <span class="t-dim">(copied)</span>`);
+        copy(addr); revealEmail();
+      }],
+      theme: ["theme [mint|violet|amber|rose|ice]", (args) => {
+        if (!args[0]) return print(Object.keys(THEMES).map((n) => `<span style="color:rgb(${THEMES[n].a.join(",")})">${n === themeName ? "● " : "  "}${n}</span>`).join("\n"));
+        setTheme(args[0].toLowerCase())
+          ? print(`<span class="t-acc">Theme set to ${esc(args[0].toLowerCase())}.</span>`)
+          : print(`<span class="t-err">unknown theme: ${esc(args[0])}</span>`);
+      }],
+      matrix: ["follow the white rabbit", () => {
+        if (!matrix()) return print('<span class="t-dim">Motion is reduced on this device.</span>');
+        print('<span class="t-acc">Wake up, Neo…</span>');
+        setTimeout(closeTerm, 500);
+      }],
+      coffee: ["brew a cup", () => print("☕  brewing… <span class=\"t-acc\">done</span>. Back to work.")],
+      date: ["local time", () => print(new Date().toLocaleString("en-US", { timeZone: CONFIG.tz, dateStyle: "full", timeStyle: "short" }) + " CT")],
+      echo: ["print text", (args) => print(esc(args.join(" ")))],
+      clear: ["clear the screen", () => (termOut.innerHTML = "")],
+      exit: ["close terminal", () => closeTerm()],
+      sudo: ["", (args) => {
+        shake();
+        print(args.length
+          ? '<span class="t-err">guest is not in the sudoers file. This incident will be reported.</span>'
+          : '<span class="t-err">usage: sudo &lt;command&gt;</span>');
+      }, true],
+      rm: ["", () => { shake(); print('<span class="t-err">Nice try.</span>'); }, true],
+      hello: ["", () => print("Hey there 👋  Type <span class=\"t-acc\">help</span> to look around."), true],
+      hi: ["", () => COMMANDS.hello[1](), true],
+      ping: ["", () => print("pong"), true],
+    };
+
+    function run(raw) {
+      const line = raw.trim();
+      print(`<span class="ps1">guest@evanbarth:~$</span> ${esc(line)}`);
+      if (!line) return;
+      hist.push(line); hpos = hist.length;
+      const [cmd, ...args] = line.split(/\s+/);
+      const entry = COMMANDS[cmd.toLowerCase()];
+      entry ? entry[1](args) : print(`<span class="t-err">command not found: ${esc(cmd)}</span> <span class="t-dim">— try 'help'</span>`);
+    }
+
+    function openTerm() {
+      term.hidden = false;
+      requestAnimationFrame(() => term.classList.add("open"));
+      if (!greeted) {
+        greeted = true;
+        print(`<span class="t-acc">Welcome to ${esc(CONFIG.host)}</span>`);
+        print(`<span class="t-dim">Type 'help' to see what you can do.</span>`);
+        print("");
+      }
+      setTimeout(() => termIn.focus(), 50);
+    }
+    function closeTerm() {
+      term.classList.remove("open");
+      setTimeout(() => (term.hidden = true), 250);
+      $("#term-open").focus({ preventScroll: true });
+    }
+
+    $("#term-open").addEventListener("click", openTerm);
+    $("#term-close").addEventListener("click", closeTerm);
+    termBody.addEventListener("click", () => { if (!getSelection().toString()) termIn.focus(); });
+    $("#term-form").addEventListener("submit", (e) => { e.preventDefault(); run(termIn.value); termIn.value = ""; });
+    termIn.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" && hpos > 0) { termIn.value = hist[--hpos]; e.preventDefault(); }
+      else if (e.key === "ArrowDown") { hpos = Math.min(hist.length, hpos + 1); termIn.value = hist[hpos] || ""; e.preventDefault(); }
+      else if (e.key === "Tab") {
+        e.preventDefault();
+        const v = termIn.value.toLowerCase();
+        const m = Object.keys(COMMANDS).filter((c) => !COMMANDS[c][2] && c.startsWith(v));
+        if (m.length === 1) termIn.value = m[0] + " ";
+        else if (m.length > 1) { print(`<span class="ps1">guest@evanbarth:~$</span> ${esc(termIn.value)}`); print(m.join("  ")); }
+      }
+    });
+    addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !term.hidden) return closeTerm();
+      if ((e.key === "/" || e.key === "`") && term.hidden && !e.target.closest("input, textarea")) { e.preventDefault(); openTerm(); }
+    });
+
+    /* ---------- Boot sequence, first visit per session. To kill it,
+       delete the sessionStorage "booted" check in the <head> script. ---------- */
+    function intro() {
+      setTimeout(() => scramble(nameEl, nameEl.dataset.text, 1100), 350);
+      setTimeout(() => {
+        const r = mark.getBoundingClientRect();
+        ripple(r.left + r.width / 2, r.top + r.height / 2);
+      }, 500);
+    }
+
+    if (root.classList.contains("booting")) {
+      const BOOT = [
+        ["dim", `EB-BIOS v26.11  ·  ${CONFIG.host}`],
+        ["", ""],
+        ["ok", "Initializing identity provider"],
+        ["ok", "Mounting /home/evan"],
+        ["ok", "Starting coffee.service"],
+        ["ok", "Loading modules: infrastructure, security, automation"],
+        ["ok", "Negotiating TLS 1.3 handshake"],
+        ["ok", "Rendering dot field"],
+        ["", ""],
+        ["hi", "Welcome."],
+      ];
+      const log = $("#boot-log"), boot = $("#boot");
+      let i = 0, done = false, timer;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        try { sessionStorage.setItem("booted", "1"); } catch {}
+        boot.classList.add("done");
+        root.classList.remove("booting");
+        setTimeout(() => boot.remove(), 600);
+        removeEventListener("keydown", finish, true);
+        removeEventListener("pointerdown", finish, true);
+        intro();
+      };
+      const step = () => {
+        if (i >= BOOT.length) { timer = setTimeout(finish, 450); return; }
+        const [cls, text] = BOOT[i++];
+        const div = document.createElement("div");
+        div.innerHTML = cls === "ok" ? `<span class="ok">[  OK  ]</span> ${esc(text)}` : `<span class="${cls}">${esc(text) || "&nbsp;"}</span>`;
+        log.appendChild(div);
+        timer = setTimeout(step, cls === "ok" ? 95 + Math.random() * 90 : 140);
+      };
+      addEventListener("keydown", finish, true);
+      addEventListener("pointerdown", finish, true);
+      step();
+    } else {
+      intro();
+    }
+  })();
+  </script>
+</body>
+</html>
