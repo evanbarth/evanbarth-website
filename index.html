@@ -658,6 +658,7 @@
       focus: "Infrastructure, identity, security, automation",
       bio: "IT Director in Springfield, Missouri. I lead operations for a multi-company organization with 20+ locations. Also in school for a BS in Computer Science.",
       tz: "America/Chicago",
+      version: "28.11",   // shows on the boot screen as EB-BIOS v28.11
     };
 
     // a = accent, b = second color, grey = resting dot color, bg = browser bar color.
@@ -1203,7 +1204,7 @@
 
     if (root.classList.contains("booting")) {
       const BOOT = [
-        ["dim", `EB-BIOS v26.11  ·  ${CONFIG.host}`],
+        ["dim", `EB-BIOS v${CONFIG.version}  ·  ${CONFIG.host}`],
         ["", ""],
         ["ok", "Initializing identity provider"],
         ["ok", "Mounting /home/evan"],
