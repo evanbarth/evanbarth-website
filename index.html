@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Evan Barth</title>
   <meta name="description" content="Evan Barth — IT Director. Infrastructure, identity, and security." />
-  <meta name="theme-color" content="#0c0d10" />
+  <meta name="theme-color" content="#060c12" />
   <meta property="og:title" content="Evan Barth" />
   <meta property="og:description" content="IT Director. Infrastructure, identity, and security." />
   <meta property="og:type" content="website" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='18' fill='%230c0d10'/%3E%3Cpath d='M40 6 70 23v34L40 74 10 57V23Z' fill='none' stroke='%237CF2C4' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M34.8 32.7H26.7V47.3H34.8M26.7 40H33.1 M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='square'/%3E%3Cpath d='M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6' fill='none' stroke='%237CF2C4' stroke-width='2.4'/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='18' fill='%23060c12'/%3E%3Cpath d='M40 6 70 23v34L40 74 10 57V23Z' fill='none' stroke='%230593C6' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M34.8 32.7H26.7V47.3H34.8M26.7 40H33.1 M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='square'/%3E%3Cpath d='M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6' fill='none' stroke='%23D83995' stroke-width='2.4'/%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@700&display=swap" rel="stylesheet" />
 
   <script>
     // Runs before first paint so nothing flashes: decides whether to show my boot
@@ -22,10 +22,11 @@
       var d = document.documentElement;
       try {
         if (!sessionStorage.getItem("booted") && !matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("booting");
-        var T = { mint: ["124 242 196", "167 139 250"], violet: ["167 139 250", "124 242 196"], amber: ["251 191 36", "244 114 182"], rose: ["251 113 133", "129 140 248"], ice: ["125 211 252", "167 139 250"] };
-        var t = T[localStorage.getItem("theme")];
-        if (t) { d.style.setProperty("--a", t[0]); d.style.setProperty("--b", t[1]); }
-      } catch (e) {}
+        var T = { sky: ["5 147 198", "216 57 149"], mint: ["124 242 196", "167 139 250"], violet: ["167 139 250", "124 242 196"], amber: ["251 191 36", "244 114 182"], rose: ["251 113 133", "129 140 248"], ice: ["125 211 252", "167 139 250"] };
+        var saved = localStorage.getItem("theme"), name = T[saved] ? saved : "sky";
+        d.setAttribute("data-theme", name);
+        d.style.setProperty("--a", T[name][0]); d.style.setProperty("--b", T[name][1]);
+      } catch (e) { d.setAttribute("data-theme", "sky"); }
     })();
   </script>
 
@@ -41,6 +42,7 @@
       --mx: 50vw;
       --my: 40vh;
       --display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+      --name: "Orbitron", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;   /* just for my name */
       --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
@@ -137,11 +139,11 @@
 
     /* ---------- Name & status ---------- */
     h1 {
-      font-family: var(--display);
+      font-family: var(--name);
       font-weight: 700;
       font-size: clamp(2.4rem, 8vw, 3.1rem);
       line-height: 1.05;
-      letter-spacing: -0.02em;
+      letter-spacing: 0.01em;
       text-align: center;
       white-space: nowrap;
       background: linear-gradient(100deg, #fff 30%, var(--accent) 50%, #fff 70%);
@@ -440,6 +442,95 @@
       section { margin-bottom: 8px; }
     }
 
+    /* ---------- Sky: my default look. Dark navy-black with sky blue + hot pink.
+       Everything else (mint, violet, amber, rose, ice) uses the base styles above. ---------- */
+    html[data-theme="sky"] { --bg:#060c12; --fg:#F1F6F9; --muted:#85959f; --a:5 147 198; --b:216 57 149; }
+    html[data-theme="sky"] body {
+      background:
+        radial-gradient(42% 38% at 18% 78%, rgba(216,57,149,.12), transparent 70%),
+        radial-gradient(40% 40% at 85% 18%, rgba(5,147,198,.13), transparent 70%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+    html[data-theme="sky"] body::before {
+      background:
+        radial-gradient(520px circle at var(--mx) var(--my), rgba(5,147,198,.10), transparent 60%),
+        radial-gradient(760px circle at calc(var(--mx) + 180px) calc(var(--my) + 140px), rgba(216,57,149,.075), transparent 65%);
+    }
+    /* faint fluted-glass stripes instead of film grain */
+    html[data-theme="sky"] body::after { inset:0; opacity:1; background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.017) 0 1px, transparent 1px 9px); }
+    html[data-theme="sky"] h1 { background-image: linear-gradient(100deg, var(--fg) 25%, #6fd0f5 42%, #f07ab9 58%, var(--fg) 75%); }
+    html[data-theme="sky"] .mark { filter: drop-shadow(0 0 16px rgba(5,147,198,.28)); }
+    html[data-theme="sky"] .mark:hover { filter: drop-shadow(0 0 24px rgba(216,57,149,.45)); }
+    html[data-theme="sky"] .mark-inner, html[data-theme="sky"] .mark-btc { stroke:#D83995; }
+    html[data-theme="sky"] h2::before { background:linear-gradient(90deg,#0593C6,#D83995); box-shadow:0 0 10px rgba(216,57,149,.48); }
+    html[data-theme="sky"] .hl { color:var(--fg); text-shadow:0 0 12px rgba(5,147,198,.56); background:linear-gradient(90deg,#0593C6,#D83995) no-repeat 0 100%/100% 2px; }
+    html[data-theme="sky"] .sep svg { stroke:#D83995; filter:drop-shadow(0 0 4px rgba(216,57,149,.65)); }
+    html[data-theme="sky"] li:hover .sep svg { fill:#D83995; }
+    html[data-theme="sky"] .link[data-link="linkedin"] { --c:#2fb4e6 !important; }
+    html[data-theme="sky"] .link[data-link="github"] { --c:#f06bb3 !important; }
+    html[data-theme="sky"] #email { --c:var(--fg); }
+    html[data-theme="sky"] footer { color:#4f5862; }
+    html[data-theme="sky"] .cursor { background:#D83995; }
+    html[data-theme="sky"] .term-open { border-color:rgba(5,147,198,.5); color:#5cc7ef; background:rgba(5,147,198,.06); }
+    html[data-theme="sky"] .term-open:hover, html[data-theme="sky"] .term-open:focus-visible { background:linear-gradient(90deg,#0593C6,#D83995); color:#fff; box-shadow:0 0 24px rgba(216,57,149,.4); }
+    html[data-theme="sky"] .term-open kbd { border-color:rgba(92,199,239,.45); }
+    html[data-theme="sky"] .copy:hover { color:#fff; }
+    html[data-theme="sky"] .toast { background:linear-gradient(90deg,#0593C6,#D83995); color:#fff; }
+    html[data-theme="sky"] .t-b { color:#f06bb3; }
+    html[data-theme="sky"] .term { background:rgba(6,10,15,.88); }
+
+    /* ---------- To the moon: logo hyperspin, Bitcoin logo flash, screen flash ---------- */
+    .mark.hyper { animation: hyper 1.2s cubic-bezier(.2,.8,.2,1); }
+    @keyframes hyper {
+      0%   { transform: perspective(300px) rotateY(0) scale(1); }
+      45%  { transform: perspective(300px) rotateY(900deg) scale(1.3); }
+      100% { transform: perspective(300px) rotateY(1080deg) scale(1); }
+    }
+    .btc-flash {
+      position: fixed; left: var(--fx, 50vw); top: var(--fy, 20vh); z-index: 26;
+      width: 150px; height: 150px; margin: -75px 0 0 -75px;
+      pointer-events: none; opacity: 0;
+    }
+    .btc-flash svg { width: 100%; height: 100%; filter: drop-shadow(0 0 24px #f7931a) drop-shadow(0 0 60px rgba(247,147,26,.55)); }
+    .btc-flash.go { animation: btcflash 1.7s cubic-bezier(.2,.8,.2,1) forwards; }
+    @keyframes btcflash {
+      0%   { opacity: 0; transform: scale(.15) rotate(-220deg); }
+      22%  { opacity: 1; transform: scale(1.22) rotate(12deg); }
+      34%  { transform: scale(.96) rotate(-3deg); }
+      44%  { transform: scale(1) rotate(0); }
+      72%  { opacity: 1; transform: scale(1.04); }
+      100% { opacity: 0; transform: scale(1.7) translateY(-30px); }
+    }
+    /* shockwave ring off the Bitcoin logo */
+    .btc-flash::after {
+      content: ""; position: absolute; inset: 0; border-radius: 50%;
+      border: 3px solid #f7931a; opacity: 0;
+    }
+    .btc-flash.go::after { animation: btcring 1s .25s ease-out forwards; }
+    @keyframes btcring { 0% { opacity: .9; transform: scale(.7); } 100% { opacity: 0; transform: scale(3.2); } }
+    .flash {
+      position: fixed; inset: 0; z-index: 24; pointer-events: none; opacity: 0;
+      background: radial-gradient(circle at var(--fx, 50vw) var(--fy, 20vh), rgba(247,147,26,.38), rgba(247,147,26,.08) 35%, transparent 65%);
+    }
+    .flash.go { animation: flash .9s ease-out forwards; }
+    @keyframes flash { 0% { opacity: 0; } 12% { opacity: 1; } 100% { opacity: 0; } }
+
+    /* No double-tap zoom on phones, so double-tap can start the matrix */
+    html { touch-action: manipulation; }
+
+    /* ---------- Glitch on my name when the logo gets clicked ---------- */
+    h1.glitch { animation: shine 1.6s 1.2s ease-out forwards, glitch 0.5s steps(1) 1; }
+    @keyframes glitch {
+      0%   { transform: none; filter: none; clip-path: none; }
+      12%  { transform: translate(-4px, 1px) skewX(-10deg); filter: drop-shadow(-3px 0 rgb(var(--a))) drop-shadow(3px 0 rgb(var(--b))); clip-path: inset(8% 0 52% 0); }
+      28%  { transform: translate(4px, -1px); clip-path: inset(58% 0 6% 0); }
+      44%  { transform: translate(-2px, 0) skewX(6deg); clip-path: inset(30% 0 35% 0); }
+      60%  { transform: translate(2px, 1px); filter: drop-shadow(2px 0 rgb(var(--a))) drop-shadow(-2px 0 rgb(var(--b))); clip-path: inset(-20% -5% -20% -5%); }
+      80%  { transform: translate(-1px, 0); filter: none; }
+      100% { transform: none; filter: none; clip-path: none; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
       .mark-hex, .mark-btc { stroke-dashoffset: 0; }
@@ -537,6 +628,18 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <!-- "To the moon": orange screen flash + the real Bitcoin logo popping over mine -->
+  <div class="flash" id="flash" aria-hidden="true"></div>
+  <div class="btc-flash" id="btc-flash" aria-hidden="true">
+    <svg viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="48" fill="#F7931A" />
+      <g transform="translate(50 50) rotate(14) scale(2.55) translate(-48.2 -40)" fill="none" stroke="#fff">
+        <path d="M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7" stroke-width="3.4" stroke-linecap="square" />
+        <path d="M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6" stroke-width="1.9" />
+      </g>
+    </svg>
+  </div>
+
   <script>
   (() => {
     /* =====================================================================
@@ -557,12 +660,15 @@
       tz: "America/Chicago",
     };
 
+    // a = accent, b = second color, grey = resting dot color, bg = browser bar color.
+    // Sky is my default; its full styling lives in the html[data-theme="sky"] CSS block.
     const THEMES = {
-      mint:   { a: [124, 242, 196], b: [167, 139, 250] },
-      violet: { a: [167, 139, 250], b: [124, 242, 196] },
-      amber:  { a: [251, 191, 36],  b: [244, 114, 182] },
-      rose:   { a: [251, 113, 133], b: [129, 140, 248] },
-      ice:    { a: [125, 211, 252], b: [167, 139, 250] },
+      sky:    { a: [5, 147, 198],   b: [216, 57, 149],  grey: [170, 189, 205], bg: "#060c12" },
+      mint:   { a: [124, 242, 196], b: [167, 139, 250], grey: [200, 205, 215], bg: "#0c0d10" },
+      violet: { a: [167, 139, 250], b: [124, 242, 196], grey: [200, 205, 215], bg: "#0c0d10" },
+      amber:  { a: [251, 191, 36],  b: [244, 114, 182], grey: [200, 205, 215], bg: "#0c0d10" },
+      rose:   { a: [251, 113, 133], b: [129, 140, 248], grey: [200, 205, 215], bg: "#0c0d10" },
+      ice:    { a: [125, 211, 252], b: [167, 139, 250], grey: [200, 205, 215], bg: "#0c0d10" },
     };
 
     const root = document.documentElement;
@@ -575,16 +681,17 @@
 
     /* ---------- Themes: the pulsing dot cycles these.
        If I add one here, add it to the <head> script too or it flashes on load. ---------- */
-    let themeName = "mint";
-    try { if (THEMES[localStorage.getItem("theme")]) themeName = localStorage.getItem("theme"); } catch {}
-    let ACC = THEMES[themeName].a;
+    let themeName = THEMES[root.dataset.theme] ? root.dataset.theme : "sky";
+    let ACC = THEMES[themeName].a, ACC2 = THEMES[themeName].b, GREY = THEMES[themeName].grey;
     function setTheme(name) {
       const t = THEMES[name];
       if (!t) return false;
       themeName = name;
-      ACC = t.a;
+      ACC = t.a; ACC2 = t.b; GREY = t.grey;
+      root.dataset.theme = name;
       root.style.setProperty("--a", t.a.join(" "));
       root.style.setProperty("--b", t.b.join(" "));
+      document.querySelector('meta[name="theme-color"]').content = t.bg;
       try { localStorage.setItem("theme", name); } catch {}
       return true;
     }
@@ -681,10 +788,10 @@
     /* ---------- Dot field + click shockwaves ---------- */
     const canvas = $("#field");
     const ctx = canvas.getContext("2d");
-    const GAP = 26, RADIUS = 170, GREY = [200, 205, 215];
+    const GAP = 26, RADIUS = 170;
     let W, H, dpr, dots = [], ripples = [];
     const mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999 };
-    let matrixUntil = 0, drops = [];
+    let mxStart = 0, mxEnd = 0, drops = [], coins = [], rockets = [], smoke = [];
 
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -704,8 +811,16 @@
       ctx.clearRect(0, 0, W, H);
       mouse.x += (mouse.tx - mouse.x) * 0.12;
       mouse.y += (mouse.ty - mouse.y) * 0.12;
-      if (t < matrixUntil) return drawMatrix();
+      // m = how much matrix is showing (fades in fast, fades back to dots slower)
+      const m = t < mxEnd ? Math.max(0, Math.min(1, (t - mxStart) / 250, (mxEnd - t) / 600)) : 0;
+      if (m < 1) { ctx.globalAlpha = 1 - m; drawDots(t); }
+      if (m > 0) { ctx.globalAlpha = m; drawMatrix(); }
+      ctx.globalAlpha = 1;
+      drawRockets(t);
+      drawCoins(t);
+    }
 
+    function drawDots(t) {
       ripples = ripples.filter((r) => t - r.t < 1600);
       for (const d of dots) {
         let x = d.x, y = d.y;
@@ -738,16 +853,125 @@
 
     function drawMatrix() {
       ctx.font = "14px JetBrains Mono, monospace";
-      const [r, g, b] = ACC;
       for (let i = 0; i < drops.length; i++) {
         const x = i * 16, y = drops[i] * 16;
+        const [r, g, b] = i % 4 === 0 ? ACC2 : ACC;   // every 4th column in the second color
         for (let j = 0; j < 14; j++) {
-          ctx.fillStyle = `rgba(${r},${g},${b},${j === 0 ? 0.95 : 0.5 - j * 0.035})`;
+          ctx.fillStyle = j === 0 ? "rgba(240,248,255,0.95)" : `rgba(${r},${g},${b},${0.55 - j * 0.037})`;
           ctx.fillText(rand(), x, y - j * 16);
         }
         drops[i] += 0.5 + (i % 3) * 0.2;
         if (y - 220 > H) drops[i] = Math.random() * -20;
       }
+    }
+
+    /* ---------- ₿ coins ----------
+       Drawn like the real Bitcoin logo: orange disc, tilted ₿ built from the same paths as my logo.
+       Single clicks: all orange, slow wobbly flip (never fully edge-on), floaty fall with drift.
+       Moon mode: mixed colors, flying up. */
+    const COIN_B = new Path2D("M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7");
+    const COIN_STROKES = new Path2D("M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6");
+    function burst(x, y, n, moon = false) {
+      if (reduce) return;
+      const palette = moon ? ["#f7931a", "#f7931a", "#f7931a", `rgb(${ACC})`, `rgb(${ACC2})`] : ["#f7931a"];
+      for (let i = 0; i < n; i++) {
+        const ang = -Math.PI / 2 + (Math.random() - 0.5) * (moon ? 1.2 : 2.4);
+        const sp = moon ? 2 + Math.random() * 4 : 2.5 + Math.random() * 4;
+        coins.push({
+          x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+          g: moon ? -0.09 - Math.random() * 0.06 : 0.13,
+          s: (moon ? 16 : 20) + Math.random() * 12,
+          f: Math.random() * 6.28, vf: 0.03 + Math.random() * 0.05,
+          rot: (Math.random() - 0.5) * 0.5, vr: (Math.random() - 0.5) * 0.02,
+          ph: Math.random() * 6.28, decay: moon ? 0.008 : 0.0055, life: 1,
+          c: palette[(Math.random() * palette.length) | 0],
+        });
+      }
+    }
+    function drawCoins(t) {
+      if (!coins.length) return;
+      coins = coins.filter((c) => c.life > 0 && c.y < H + 60 && c.y > -120);
+      for (const c of coins) {
+        c.vx *= 0.985;
+        c.vy = c.g > 0 ? Math.min(c.vy + c.g, 5.2) : Math.max(c.vy + c.g, -12);   // falling coins hit a gentle top speed
+        if (c.g > 0 && c.vy > 0) c.x += Math.sin(t * 0.004 + c.ph) * 0.7;          // confetti-style drift on the way down
+        c.x += c.vx; c.y += c.vy; c.f += c.vf; c.rot += c.vr; c.life -= c.decay;
+        const s = c.s, flip = 0.55 + 0.45 * Math.abs(Math.cos(c.f));
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, c.life * 2));
+        ctx.translate(c.x, c.y); ctx.rotate(c.rot); ctx.scale(flip, 1);
+        // disc + soft glow + darker rim
+        ctx.shadowColor = c.c; ctx.shadowBlur = 10;
+        ctx.fillStyle = c.c; ctx.beginPath(); ctx.arc(0, 0, s / 2, 0, 6.283); ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = s * 0.06; ctx.strokeStyle = c.c === "#f7931a" ? "#c46a08" : "rgba(0,0,0,.28)"; ctx.stroke();
+        // the ₿, tilted 14° like the real logo
+        ctx.rotate(0.244);
+        const k = s * 0.0255; ctx.scale(k, k); ctx.translate(-48.2, -40);
+        ctx.strokeStyle = "#fff"; ctx.lineCap = "square";
+        ctx.lineWidth = 3.4; ctx.stroke(COIN_B);
+        ctx.lineCap = "butt"; ctx.lineWidth = 1.9; ctx.stroke(COIN_STROKES);
+        ctx.restore();
+      }
+    }
+
+    /* ---------- Rockets: launch from the bottom, wobble, leave a smoke trail ---------- */
+    function launchRockets(n) {
+      if (reduce) return;
+      for (let i = 0; i < n; i++) {
+        setTimeout(() => rockets.push({
+          x: W * (0.1 + 0.8 * ((i + 0.2 + Math.random() * 0.6) / n)), y: H + 40,
+          vx: (Math.random() - 0.5) * 0.8, vy: -1 - Math.random(),
+          ay: -(0.1 + Math.random() * 0.07), s: 1.1 + Math.random() * 0.55, ph: Math.random() * 6.28,
+        }), i * 170 + Math.random() * 140);
+      }
+    }
+    function drawRockets(t) {
+      if (!rockets.length && !smoke.length) return;
+      smoke = smoke.filter((p) => p.life > 0);
+      for (const p of smoke) {
+        p.x += p.vx; p.y += p.vy; p.vx *= 0.97; p.vy *= 0.97; p.life -= 0.022; p.r += 0.2;
+        ctx.globalAlpha = Math.max(0, p.life) * 0.75;
+        ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      rockets = rockets.filter((r) => r.y > -140);
+      const trail = ["#f7931a", "#ffd27a", `rgb(${ACC2})`, "rgb(200,215,230)"];
+      for (const r of rockets) {
+        r.vy = Math.max(r.vy + r.ay, -17);
+        const wob = Math.sin(t * 0.006 + r.ph) * 0.6;
+        r.x += r.vx + wob; r.y += r.vy;
+        const ang = Math.atan2(r.vy, r.vx + wob) + Math.PI / 2;
+        const tx = r.x - Math.sin(ang) * 16 * r.s, ty = r.y + Math.cos(ang) * 16 * r.s;
+        for (let k = 0; k < 3; k++) smoke.push({ x: tx + (Math.random() - 0.5) * 4, y: ty, vx: (Math.random() - 0.5) * 1.2, vy: 1.2 + Math.random() * 1.6, r: 1.5 + Math.random() * 2.5, life: 1, c: trail[(Math.random() * trail.length) | 0] });
+        drawRocket(r, ang);
+      }
+    }
+    function drawRocket(r, ang) {
+      const A = `rgb(${ACC})`, B = `rgb(${ACC2})`;
+      ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(ang); ctx.scale(r.s, r.s);
+      // flame (flickers every frame)
+      const fl = 10 + Math.random() * 12;
+      const g = ctx.createLinearGradient(0, 12, 0, 14 + fl);
+      g.addColorStop(0, "#fff7c2"); g.addColorStop(0.45, "#f7931a"); g.addColorStop(1, "rgba(216,57,149,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(-5, 12); ctx.quadraticCurveTo(0, 14 + fl * 1.5, 5, 12); ctx.closePath(); ctx.fill();
+      // fins
+      ctx.fillStyle = B; ctx.beginPath();
+      ctx.moveTo(-7, 3); ctx.lineTo(-14, 15); ctx.lineTo(-13, 18); ctx.lineTo(-7, 13);
+      ctx.moveTo(7, 3); ctx.lineTo(14, 15); ctx.lineTo(13, 18); ctx.lineTo(7, 13); ctx.fill();
+      // body with a glow
+      ctx.shadowColor = A; ctx.shadowBlur = 14;
+      ctx.fillStyle = "#EEF3F7"; ctx.beginPath();
+      ctx.moveTo(0, -22); ctx.bezierCurveTo(9, -13, 9, 4, 7, 14); ctx.lineTo(-7, 14); ctx.bezierCurveTo(-9, 4, -9, -13, 0, -22); ctx.fill();
+      ctx.shadowBlur = 0;
+      // nose cone, center fin, window
+      ctx.fillStyle = B; ctx.beginPath();
+      ctx.moveTo(0, -22); ctx.bezierCurveTo(5, -17.5, 6.8, -14, 7.6, -11); ctx.lineTo(-7.6, -11); ctx.bezierCurveTo(-6.8, -14, -5, -17.5, 0, -22); ctx.fill();
+      ctx.fillRect(-1.2, 6, 2.4, 9);
+      ctx.fillStyle = A; ctx.beginPath(); ctx.arc(0, -2, 3.8, 0, 6.283); ctx.fill();
+      ctx.lineWidth = 1.6; ctx.strokeStyle = "#0b1520"; ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.beginPath(); ctx.arc(-1.2, -3.2, 1.1, 0, 6.283); ctx.fill();
+      ctx.restore();
     }
 
     function loop(t) { draw(t); requestAnimationFrame(loop); }
@@ -760,18 +984,34 @@
       if (finePointer && !reduce) tilt(e);
     });
     addEventListener("pointerleave", () => { mouse.tx = mouse.ty = -9999; });
+    // Single tap = shockwave. Double-click / double-tap anywhere that isn't a link,
+    // button or my logo = a quick matrix rain that spreads out from where you tapped.
+    let lastTap = { t: 0, x: 0, y: 0 };
     addEventListener("pointerdown", (e) => {
-      if (e.target.closest("a, button, input, .term, .boot")) return;
+      if (e.target.closest("a, button, input, .term, .boot, #mark")) return;
       ripple(e.clientX, e.clientY);
+      const now = performance.now();
+      if (now - lastTap.t < 330 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 40) {
+        lastTap.t = 0;
+        matrix(2600, e.clientX);
+      } else lastTap = { t: now, x: e.clientX, y: e.clientY };
     });
+    // Don't let a double-click on text highlight a word
+    addEventListener("mousedown", (e) => { if (e.detail > 1 && !e.target.closest("input, .term")) e.preventDefault(); });
     resize();
     if (!reduce) requestAnimationFrame(loop);
 
-    /* ---------- Easter egg: matrix rain (Konami code, or 5 quick clicks on my logo) ---------- */
-    function matrix() {
+    /* ---------- Easter eggs ----------
+       Matrix rain: double-click the background (short), Konami code or `matrix` (long).
+       Logo: every click = spin + ₿ burst + name glitch.
+       5 quick clicks (or `moon` in the terminal) = hyperspin, Bitcoin logo flash, coins up, rockets. */
+    function matrix(ms = 6000, originX = null) {
       if (reduce) return false;
-      drops = drops.map(() => Math.random() * -30);
-      matrixUntil = performance.now() + 6000;
+      // with an origin, columns closest to the click start first so it spreads outward
+      drops = drops.map((_, i) => originX == null ? Math.random() * -30 : -Math.abs(i * 16 - originX) / 16 * 0.55 - Math.random() * 4);
+      const now = performance.now();
+      if (now > mxEnd) mxStart = now;
+      mxEnd = Math.max(mxEnd, now + ms);
       return true;
     }
     const KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
@@ -781,14 +1021,35 @@
       kpos = e.key === KONAMI[kpos] ? kpos + 1 : (e.key === KONAMI[0] ? 1 : 0);
       if (kpos === KONAMI.length) { kpos = 0; if (matrix()) toast("Wake up, Neo…"); }
     });
+    const flashEl = $("#flash"), btcEl = $("#btc-flash");
+    const restart = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
+    function logoCenter() { const r = mark.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
+
+    // The big one: logo hyperspins, the Bitcoin logo flashes over it, coins fly up, rockets launch
+    function toTheMoon() {
+      toast("To the moon 🚀");
+      if (reduce) return;
+      const [cx, cy] = logoCenter();
+      root.style.setProperty("--fx", cx + "px");
+      root.style.setProperty("--fy", cy + "px");
+      mark.classList.remove("spin"); restart(mark, "hyper");
+      restart(nameEl, "glitch"); restart(flashEl, "go"); restart(btcEl, "go");
+      ripple(cx, cy);
+      setTimeout(() => { ripple(cx, cy); burst(cx, cy, 46, true); }, 280);
+      launchRockets(innerWidth < 600 ? 4 : 6);
+    }
+
     mark.addEventListener("click", () => {
-      mark.classList.remove("spin"); void mark.offsetWidth; mark.classList.add("spin");
-      const r = mark.getBoundingClientRect();
-      ripple(r.left + r.width / 2, r.top + r.height / 2);
+      const [cx, cy] = logoCenter();
       clearTimeout(clickTimer);
-      if (++clicks >= 5) { clicks = 0; if (matrix()) toast("Wake up, Neo…"); }
+      if (++clicks >= 5) { clicks = 0; toTheMoon(); return; }
+      restart(mark, "spin"); restart(nameEl, "glitch");
+      ripple(cx, cy);
+      burst(cx, cy, 8 + clicks * 3);
       clickTimer = setTimeout(() => (clicks = 0), 1200);
     });
+    mark.addEventListener("animationend", (e) => { if (e.animationName === "hyper") mark.classList.remove("hyper"); });
+    nameEl.addEventListener("animationend", (e) => { if (e.animationName === "glitch") nameEl.classList.remove("glitch"); });
 
     /* ---------- Terminal. Anything with `true` as the 3rd item is a secret,
        so it works but stays out of help and tab completion. ---------- */
@@ -880,6 +1141,7 @@
       hello: ["", () => print("Hey there 👋  Type <span class=\"t-acc\">help</span> to look around."), true],
       hi: ["", () => COMMANDS.hello[1](), true],
       ping: ["", () => print("pong"), true],
+      moon: ["", () => { print('<span class="t-acc">🚀 Launching…</span>'); setTimeout(closeTerm, 350); setTimeout(toTheMoon, 650); }, true],
     };
 
     function run(raw) {
@@ -941,7 +1203,7 @@
 
     if (root.classList.contains("booting")) {
       const BOOT = [
-        ["dim", `EB-BIOS v28.11  ·  ${CONFIG.host}`],
+        ["dim", `EB-BIOS v26.11  ·  ${CONFIG.host}`],
         ["", ""],
         ["ok", "Initializing identity provider"],
         ["ok", "Mounting /home/evan"],
