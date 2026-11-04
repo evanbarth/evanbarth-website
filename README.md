@@ -62,6 +62,7 @@ Everything personal is in two spots.
 | `role`, `region`, `stack`, `focus` | `neofetch` |
 | `bio` | `whoami` |
 | `tz` | Time zone for the clock and `date` (`America/Chicago`) |
+| `version` | The version on the boot screen (`EB-BIOS v28.11`) |
 
 ### If I change my email
 
