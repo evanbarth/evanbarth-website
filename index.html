@@ -22,7 +22,7 @@
       var d = document.documentElement;
       try {
         if (!sessionStorage.getItem("booted") && !matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("booting");
-        var T = { sky: ["5 147 198", "216 57 149"], mint: ["124 242 196", "167 139 250"], violet: ["167 139 250", "124 242 196"], amber: ["251 191 36", "244 114 182"], rose: ["251 113 133", "129 140 248"], ice: ["125 211 252", "167 139 250"] };
+        var T = { sky: ["5 147 198", "216 57 149"], bitcoin: ["247 147 26", "255 194 61"], mint: ["124 242 196", "167 139 250"], violet: ["167 139 250", "124 242 196"], amber: ["251 191 36", "244 114 182"], rose: ["251 113 133", "129 140 248"], ice: ["125 211 252", "167 139 250"] };
         var saved = localStorage.getItem("theme"), name = T[saved] ? saved : "sky";
         d.setAttribute("data-theme", name);
         d.style.setProperty("--a", T[name][0]); d.style.setProperty("--b", T[name][1]);
@@ -109,6 +109,31 @@
       transition: transform 0.25s ease-out, filter 0.4s;
     }
     .mark:hover { filter: drop-shadow(0 0 26px rgb(var(--a) / 0.55)); }
+    .mark:focus-visible { outline: 1px dashed var(--accent); outline-offset: 6px; border-radius: 10px; }
+
+    /* ---------- "Click me" hint: wiggle + golden hex rings until someone finds the logo ---------- */
+    .mark-wrap { position: relative; width: fit-content; margin: 0 auto; }
+    .halo {
+      position: absolute; left: 0; top: 0; width: 100%; aspect-ratio: 1;
+      pointer-events: none; opacity: 0; overflow: visible;
+    }
+    .halo path { fill: none; stroke: #ffc23d; stroke-width: 2.5; stroke-linejoin: round; }
+    .mark-wrap.nudge .halo   { animation: halo 1.7s ease-out; }
+    .mark-wrap.nudge .halo-2 { animation-delay: .35s; }
+    .mark-wrap.nudge .mark   { animation: wiggle .9s ease-in-out; filter: drop-shadow(0 0 14px rgba(255,194,61,.75)) drop-shadow(0 0 28px rgba(247,147,26,.35)); }
+    @keyframes halo {
+      0%   { opacity: 0;  transform: scale(.9);  filter: drop-shadow(0 0 4px #ffc23d); }
+      15%  { opacity: .95; }
+      100% { opacity: 0;  transform: scale(1.75); filter: drop-shadow(0 0 10px #f7931a); }
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: perspective(300px) rotate(0); }
+      15% { transform: perspective(300px) rotate(-12deg) scale(1.06); }
+      30% { transform: perspective(300px) rotate(10deg) scale(1.06); }
+      45% { transform: perspective(300px) rotate(-7deg); }
+      60% { transform: perspective(300px) rotate(4deg); }
+      75% { transform: perspective(300px) rotate(-2deg); }
+    }
     .mark.spin { animation: spin 0.7s cubic-bezier(.2,.8,.2,1); }
     @keyframes spin { from { transform: perspective(300px) rotateY(0); } to { transform: perspective(300px) rotateY(360deg); } }
 
@@ -516,6 +541,48 @@
     .flash.go { animation: flash .9s ease-out forwards; }
     @keyframes flash { 0% { opacity: 0; } 12% { opacity: 1; } 100% { opacity: 0; } }
 
+    /* ---------- Bitcoin orange: official #F7931A on warm near-black, gold as the second color ---------- */
+    html[data-theme="bitcoin"] { --bg:#0b0907; --fg:#F5F1EB; --muted:#9a8f84; --a:247 147 26; --b:255 194 61; }
+    html[data-theme="bitcoin"] body {
+      background:
+        radial-gradient(42% 38% at 18% 80%, rgba(247,147,26,.10), transparent 70%),
+        radial-gradient(40% 40% at 85% 15%, rgba(255,194,61,.07), transparent 70%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+    html[data-theme="bitcoin"] body::before {
+      background:
+        radial-gradient(520px circle at var(--mx) var(--my), rgba(247,147,26,.10), transparent 60%),
+        radial-gradient(760px circle at calc(var(--mx) + 180px) calc(var(--my) + 140px), rgba(255,194,61,.05), transparent 65%);
+    }
+    html[data-theme="bitcoin"] h1 { background-image: linear-gradient(100deg, var(--fg) 25%, #ffc23d 42%, #f7931a 58%, var(--fg) 75%); }
+    html[data-theme="bitcoin"] .mark { filter: drop-shadow(0 0 16px rgba(247,147,26,.35)); }
+    html[data-theme="bitcoin"] .mark:hover { filter: drop-shadow(0 0 26px rgba(255,194,61,.55)); }
+    html[data-theme="bitcoin"] .mark-inner, html[data-theme="bitcoin"] .mark-btc { stroke:#ffc23d; }
+    html[data-theme="bitcoin"] h2::before { background:linear-gradient(90deg,#f7931a,#ffc23d); box-shadow:0 0 10px rgba(247,147,26,.55); }
+    html[data-theme="bitcoin"] .hl { color:var(--fg); text-shadow:0 0 12px rgba(247,147,26,.6); background:linear-gradient(90deg,#f7931a,#ffc23d) no-repeat 0 100%/100% 2px; }
+    html[data-theme="bitcoin"] .sep svg { stroke:#ffc23d; filter:drop-shadow(0 0 4px rgba(255,194,61,.6)); }
+    html[data-theme="bitcoin"] li:hover .sep svg { fill:#ffc23d; }
+    html[data-theme="bitcoin"] .link[data-link="linkedin"] { --c:#f7931a !important; }
+    html[data-theme="bitcoin"] .link[data-link="github"] { --c:#ffc23d !important; }
+    html[data-theme="bitcoin"] #email { --c:var(--fg); }
+    html[data-theme="bitcoin"] footer { color:#5a524a; }
+    html[data-theme="bitcoin"] .cursor { background:#f7931a; }
+    html[data-theme="bitcoin"] .term-open { border-color:rgba(247,147,26,.5); color:#ffb04a; background:rgba(247,147,26,.06); }
+    html[data-theme="bitcoin"] .term-open:hover, html[data-theme="bitcoin"] .term-open:focus-visible { background:linear-gradient(90deg,#f7931a,#ffc23d); color:#1a1206; box-shadow:0 0 24px rgba(247,147,26,.45); }
+    html[data-theme="bitcoin"] .term-open kbd { border-color:rgba(255,176,74,.45); }
+    html[data-theme="bitcoin"] .copy:hover { color:#1a1206; }
+    html[data-theme="bitcoin"] .toast { background:linear-gradient(90deg,#f7931a,#ffc23d); color:#1a1206; }
+    html[data-theme="bitcoin"] .t-b { color:#ffc23d; }
+    html[data-theme="bitcoin"] .term { background:rgba(12,10,8,.9); }
+
+    /* Live BTC price in the status line (bitcoin theme only); flashes green/red when it moves */
+    .btc-price { white-space: nowrap; }
+    .btc-price svg { width: 11px; height: 11px; vertical-align: -1px; margin-right: 4px; }
+    .btc-price b { font-weight: 500; color: #f7931a; transition: color .4s; }
+    .btc-price.up b { color: #3ddc84; }
+    .btc-price.down b { color: #ff5d6c; }
+
     /* No double-tap zoom on phones, so double-tap can start the matrix */
     html { touch-action: manipulation; }
 
@@ -548,18 +615,23 @@
 
   <main>
     <div class="card">
-      <svg class="mark" id="mark" viewBox="0 0 80 80" role="img" aria-label="EB monogram">
+      <div class="mark-wrap" id="mark-wrap">
+      <svg class="halo" viewBox="0 0 80 80" aria-hidden="true"><path d="M40 6 70 23v34L40 74 10 57V23Z" /></svg>
+      <svg class="halo halo-2" viewBox="0 0 80 80" aria-hidden="true"><path d="M40 6 70 23v34L40 74 10 57V23Z" /></svg>
+      <svg class="mark" id="mark" viewBox="0 0 80 80" role="button" tabindex="0" aria-label="EB logo. Click me.">
+        <title>psst… click me</title>
         <path class="mark-hex" d="M40 6 70 23v34L40 74 10 57V23Z" />
         <path class="mark-inner" d="M40 14 63 27v26L40 66 17 53V27Z" />
         <path class="mark-text" d="M34.8 32.7H26.7V47.3H34.8M26.7 40H33.1 M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7" />
         <path class="mark-btc" pathLength="1" d="M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6" />
       </svg>
+      </div>
 
       <h1 id="name" data-text="Evan Barth">Evan Barth</h1>
 
       <div class="status rise" style="--i:0">
         <button class="theme-btn" id="theme-btn" type="button" aria-label="Change accent color" title="Change accent color"><span class="pulse"></span></button>
-        <span>Springfield, MO · <span id="clock">--:--</span> CT</span>
+        <span>Springfield, MO · <span id="clock">--:--</span> CT<span class="btc-price" id="btc-price" hidden> · <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#F7931A"/><g transform="translate(50 50) rotate(14) scale(2.55) translate(-48.2 -40)" fill="none" stroke="#fff"><path d="M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7" stroke-width="4" stroke-linecap="square"/><path d="M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6" stroke-width="2.4"/></g></svg><b id="btc-val"></b></span></span>
       </div>
 
       <section>
@@ -665,6 +737,7 @@
     // Sky is my default; its full styling lives in the html[data-theme="sky"] CSS block.
     const THEMES = {
       sky:    { a: [5, 147, 198],   b: [216, 57, 149],  grey: [170, 189, 205], bg: "#060c12" },
+      bitcoin:{ a: [247, 147, 26],  b: [255, 194, 61],  grey: [205, 190, 172], bg: "#0b0907", label: "bitcoin orange ₿" },
       mint:   { a: [124, 242, 196], b: [167, 139, 250], grey: [200, 205, 215], bg: "#0c0d10" },
       violet: { a: [167, 139, 250], b: [124, 242, 196], grey: [200, 205, 215], bg: "#0c0d10" },
       amber:  { a: [251, 191, 36],  b: [244, 114, 182], grey: [200, 205, 215], bg: "#0c0d10" },
@@ -684,7 +757,9 @@
        If I add one here, add it to the <head> script too or it flashes on load. ---------- */
     let themeName = THEMES[root.dataset.theme] ? root.dataset.theme : "sky";
     let ACC = THEMES[themeName].a, ACC2 = THEMES[themeName].b, GREY = THEMES[themeName].grey;
-    function setTheme(name) {
+    const THEME_ALIASES = { orange: "bitcoin", btc: "bitcoin" };
+    function setTheme(name, celebrate = false) {
+      name = THEME_ALIASES[name] || name;
       const t = THEMES[name];
       if (!t) return false;
       themeName = name;
@@ -694,14 +769,15 @@
       root.style.setProperty("--b", t.b.join(" "));
       document.querySelector('meta[name="theme-color"]').content = t.bg;
       try { localStorage.setItem("theme", name); } catch {}
+      bitcoinMode(name === "bitcoin", celebrate);
       return true;
     }
     $("#theme-btn").addEventListener("click", (e) => {
       const names = Object.keys(THEMES);
-      setTheme(names[(names.indexOf(themeName) + 1) % names.length]);
+      setTheme(names[(names.indexOf(themeName) + 1) % names.length], true);
       const r = e.currentTarget.getBoundingClientRect();
       ripple(r.left + r.width / 2, r.top + r.height / 2);
-      toast("Theme: " + themeName);
+      toast("Theme: " + (THEMES[themeName].label || themeName));
     });
 
     /* ---------- Text scramble (my name on load, the email on reveal) ---------- */
@@ -847,8 +923,18 @@
         const c0 = GREY[0] + (ACC[0] - GREY[0]) * Math.min(1, k * 2.5);
         const c1 = GREY[1] + (ACC[1] - GREY[1]) * Math.min(1, k * 2.5);
         const c2 = GREY[2] + (ACC[2] - GREY[2]) * Math.min(1, k * 2.5);
-        ctx.fillStyle = `rgba(${c0 | 0},${c1 | 0},${c2 | 0},${a})`;
-        ctx.beginPath(); ctx.arc(x, y, 0.9 + k * 1.4, 0, 6.283); ctx.fill();
+        if (themeName === "bitcoin" && k > 0.3) {
+          // bitcoin mode: dots near the cursor (or a ripple) turn into little ₿s
+          const sc = (6 + k * 10) / 25;
+          ctx.save(); ctx.translate(x, y); ctx.rotate(0.244); ctx.scale(sc, sc); ctx.translate(-48.2, -40);
+          ctx.strokeStyle = `rgba(${c0 | 0},${c1 | 0},${c2 | 0},${Math.min(1, a + 0.15)})`;
+          ctx.lineCap = "square"; ctx.lineWidth = 3.4; ctx.stroke(COIN_B);
+          ctx.lineCap = "butt"; ctx.lineWidth = 1.9; ctx.stroke(COIN_STROKES);
+          ctx.restore();
+        } else {
+          ctx.fillStyle = `rgba(${c0 | 0},${c1 | 0},${c2 | 0},${a})`;
+          ctx.beginPath(); ctx.arc(x, y, 0.9 + k * 1.4, 0, 6.283); ctx.fill();
+        }
       }
     }
 
@@ -859,7 +945,7 @@
         const [r, g, b] = i % 4 === 0 ? ACC2 : ACC;   // every 4th column in the second color
         for (let j = 0; j < 14; j++) {
           ctx.fillStyle = j === 0 ? "rgba(240,248,255,0.95)" : `rgba(${r},${g},${b},${0.55 - j * 0.037})`;
-          ctx.fillText(rand(), x, y - j * 16);
+          ctx.fillText(themeName === "bitcoin" ? "0123456789abcdef"[(Math.random() * 16) | 0] : rand(), x, y - j * 16);
         }
         drops[i] += 0.5 + (i % 3) * 0.2;
         if (y - 220 > H) drops[i] = Math.random() * -20;
@@ -891,7 +977,7 @@
     }
     function drawCoins(t) {
       if (!coins.length) return;
-      coins = coins.filter((c) => c.life > 0 && c.y < H + 60 && c.y > -120);
+      coins = coins.filter((c) => c.life > 0 && c.y < H + 60 && c.y > -H - 120);
       for (const c of coins) {
         c.vx *= 0.985;
         c.vy = c.g > 0 ? Math.min(c.vy + c.g, 5.2) : Math.max(c.vy + c.g, -12);   // falling coins hit a gentle top speed
@@ -975,6 +1061,56 @@
       ctx.restore();
     }
 
+    /* ---------- Bitcoin mode (bitcoin orange theme) ----------
+       Picking it rains orange coins from the top. While it's on, the status line shows the
+       live BTC price from Coinbase's public API (CoinGecko as backup), refreshed every minute.
+       Nothing is fetched unless this theme is on; if both fail the price just stays hidden. */
+    const priceEl = $("#btc-price"), priceVal = $("#btc-val");
+    const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    let lastPrice = null, priceTimer = null;
+    function shower(n) {
+      if (reduce) return;
+      for (let i = 0; i < n; i++) coins.push({
+        x: Math.random() * W, y: -20 - Math.random() * H * 0.6, vx: (Math.random() - 0.5) * 0.6, vy: 1 + Math.random() * 2,
+        g: 0.13, s: 18 + Math.random() * 12, f: Math.random() * 6.28, vf: 0.03 + Math.random() * 0.05,
+        rot: (Math.random() - 0.5) * 0.5, vr: (Math.random() - 0.5) * 0.02, ph: Math.random() * 6.28,
+        decay: 0.004, life: 1, c: "#f7931a",
+      });
+    }
+    async function getPrice() {
+      try {
+        const r = await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", { cache: "no-store" });
+        const v = parseFloat((await r.json())?.data?.amount);
+        if (v > 0) return v;
+      } catch {}
+      try {
+        const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+        const v = (await r.json())?.bitcoin?.usd;
+        if (v > 0) return v;
+      } catch {}
+      return null;
+    }
+    async function updatePrice() {
+      const v = await getPrice();
+      if (themeName !== "bitcoin" || v == null) return;
+      priceVal.textContent = usd.format(v);
+      priceEl.hidden = false;
+      if (lastPrice != null && Math.round(v) !== Math.round(lastPrice)) {
+        priceEl.classList.remove("up", "down"); void priceEl.offsetWidth;
+        priceEl.classList.add(v > lastPrice ? "up" : "down");
+        setTimeout(() => priceEl.classList.remove("up", "down"), 1600);
+      }
+      lastPrice = v;
+    }
+    function bitcoinMode(on, celebrate) {
+      clearInterval(priceTimer);
+      if (!on) { priceEl.hidden = true; return; }
+      updatePrice();
+      priceTimer = setInterval(updatePrice, 60000);
+      if (celebrate) shower(innerWidth < 600 ? 26 : 40);
+    }
+    if (themeName === "bitcoin") bitcoinMode(true, false);
+
     function loop(t) { draw(t); requestAnimationFrame(loop); }
 
     addEventListener("resize", resize);
@@ -1050,6 +1186,27 @@
       clickTimer = setTimeout(() => (clicks = 0), 1200);
     });
     mark.addEventListener("animationend", (e) => { if (e.animationName === "hyper") mark.classList.remove("hyper"); });
+    // Keyboard: Tab to the logo, Enter or Space works like a click
+    mark.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); mark.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
+    });
+
+    /* ---------- Logo hint: wiggle + golden rings at 3s, then every 6s (max 5 times) until it gets clicked.
+       Once someone clicks it, remember that and never nag them again. ---------- */
+    const markWrap = $("#mark-wrap");
+    let logoFound = false, hintsLeft = 5, hintTimer;
+    try { logoFound = localStorage.getItem("logoFound") === "1"; } catch {}
+    function hintLogo() {
+      if (logoFound || reduce || hintsLeft <= 0) return;
+      if (!document.hidden && term.hidden) { restart(markWrap, "nudge"); hintsLeft--; }
+      hintTimer = setTimeout(hintLogo, 6000);
+    }
+    markWrap.addEventListener("animationend", (e) => { if (e.animationName === "halo" && e.target.classList.contains("halo-2")) markWrap.classList.remove("nudge"); });
+    mark.addEventListener("click", () => {
+      if (logoFound) return;
+      logoFound = true; clearTimeout(hintTimer); markWrap.classList.remove("nudge");
+      try { localStorage.setItem("logoFound", "1"); } catch {}
+    });
     nameEl.addEventListener("animationend", (e) => { if (e.animationName === "glitch") nameEl.classList.remove("glitch"); });
 
     /* ---------- Terminal. Anything with `true` as the 3rd item is a secret,
@@ -1116,10 +1273,10 @@
         print(`<a href="mailto:${esc(addr)}">${esc(addr)}</a> <span class="t-dim">(copied)</span>`);
         copy(addr); revealEmail();
       }],
-      theme: ["theme [mint|violet|amber|rose|ice]", (args) => {
+      theme: [`theme [${Object.keys(THEMES).join("|")}]`, (args) => {
         if (!args[0]) return print(Object.keys(THEMES).map((n) => `<span style="color:rgb(${THEMES[n].a.join(",")})">${n === themeName ? "● " : "  "}${n}</span>`).join("\n"));
-        setTheme(args[0].toLowerCase())
-          ? print(`<span class="t-acc">Theme set to ${esc(args[0].toLowerCase())}.</span>`)
+        setTheme(args[0].toLowerCase(), true)
+          ? print(`<span class="t-acc">Theme set to ${esc(THEMES[themeName].label || themeName)}.</span>`)
           : print(`<span class="t-err">unknown theme: ${esc(args[0])}</span>`);
       }],
       matrix: ["follow the white rabbit", () => {
@@ -1127,6 +1284,7 @@
         print('<span class="t-acc">Wake up, Neo…</span>');
         setTimeout(closeTerm, 500);
       }],
+      moon: ["to the moon 🚀", () => { print('<span class="t-acc">🚀 Launching…</span>'); setTimeout(closeTerm, 350); setTimeout(toTheMoon, 650); }],
       coffee: ["brew a cup", () => print("☕  brewing… <span class=\"t-acc\">done</span>. Back to work.")],
       date: ["local time", () => print(new Date().toLocaleString("en-US", { timeZone: CONFIG.tz, dateStyle: "full", timeStyle: "short" }) + " CT")],
       echo: ["print text", (args) => print(esc(args.join(" ")))],
@@ -1142,7 +1300,11 @@
       hello: ["", () => print("Hey there 👋  Type <span class=\"t-acc\">help</span> to look around."), true],
       hi: ["", () => COMMANDS.hello[1](), true],
       ping: ["", () => print("pong"), true],
-      moon: ["", () => { print('<span class="t-acc">🚀 Launching…</span>'); setTimeout(closeTerm, 350); setTimeout(toTheMoon, 650); }, true],
+      btc: ["", async () => {
+        print('<span class="t-dim">fetching…</span>');
+        const v = await getPrice();
+        print(v ? `<span style="color:#f7931a">₿ 1 BTC = ${usd.format(v)}</span> <span class="t-dim">(Coinbase spot)</span>` : '<span class="t-err">price feed unavailable right now</span>');
+      }, true],
     };
 
     function run(raw) {
@@ -1200,6 +1362,7 @@
         const r = mark.getBoundingClientRect();
         ripple(r.left + r.width / 2, r.top + r.height / 2);
       }, 500);
+      hintTimer = setTimeout(hintLogo, 3000);   // first nudge 3s after everything settles
     }
 
     if (root.classList.contains("booting")) {

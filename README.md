@@ -6,10 +6,10 @@ My personal site. One `index.html`, no build step, no framework, no tracking. I 
 
 - **One file.** All the HTML, CSS and JavaScript live in `index.html`, so I can drop it on any static host.
 - **Dot field background.** A canvas grid that ripples on its own, reacts to the cursor, and sends a shockwave when you click.
-- **My E₿ logo.** A hand-drawn SVG hexagon that draws itself on load and tilts toward the cursor. The B has the Bitcoin strokes, and they turn orange on hover. Click it and see what happens.
+- **My E₿ logo.** A hand-drawn SVG hexagon that draws itself on load and tilts toward the cursor. The B has the Bitcoin strokes, and they turn orange on hover. Click it and see what happens. Until someone does, it wiggles and throws off golden rings every few seconds as a hint.
 - **Boot sequence.** A quick startup log the first time someone visits in a session. Any key or click skips it.
 - **A real(ish) terminal.** Press `/` or click **open terminal**. It has history, tab completion, and a few secrets.
-- **Themes.** Sky is my default: dark navy-black with sky blue and hot pink. Mint, violet, amber, rose and ice are there too. Click the pulsing dot next to my location or run `theme <name>`. It remembers the pick.
+- **Themes.** Sky is my default: dark navy-black with sky blue and hot pink. There's also **bitcoin orange** (the official `#F7931A`), which rains coins when you pick it, turns the dots near your cursor into ₿s, switches the matrix to block-hash hex and shows the live BTC price. Mint, violet, amber, rose and ice are there too. Click the pulsing dot next to my location or run `theme <name>`. It remembers the pick.
 - **Hidden email.** My address is stored encoded and only gets put together in the browser when someone clicks, so it's never sitting in the page source.
 - **My local time.** The status line shows what time it is here in Springfield.
 - **Accessible.** Keyboard friendly, visible focus states, labels for screen readers, and everything holds still for anyone with reduced motion turned on.
@@ -25,8 +25,9 @@ My personal site. One `index.html`, no build step, no framework, no tracking. I 
 | `ls` | My links |
 | `open <linkedin\|github\|email>` | Opens one |
 | `email` | Reveals and copies my email |
-| `theme [name]` | Lists or switches the accent color |
+| `theme [name]` | Lists or switches the theme (`theme bitcoin` or `theme orange` for bitcoin orange) |
 | `matrix` | Follow the white rabbit |
+| `moon` | To the moon 🚀 |
 | `coffee` | Brews a cup |
 | `date` | My local time |
 | `echo <text>` | Prints whatever you type |
@@ -38,7 +39,7 @@ My personal site. One `index.html`, no build step, no framework, no tracking. I 
 <details>
 <summary>Spoilers (don't open if you'd rather find them yourself)</summary>
 
-- Commands that aren't listed: `sudo`, `rm`, `hello`, `hi`, `ping`, `moon`
+- Commands that aren't listed: `sudo`, `rm`, `hello`, `hi`, `ping`, `btc` (live price)
 - Double-click (or double-tap on a phone) anywhere on the background for a quick matrix rain that spreads out from where you clicked
 - The Konami code (`↑ ↑ ↓ ↓ ← → ← → B A`) or `matrix` runs the long version
 - Clicking my logo throws ₿ coins and glitches my name. Click it five times fast (or type `moon` in the terminal) and it goes to the moon: the logo hyperspins, the Bitcoin logo flashes over it, coins fly up and rockets launch
@@ -110,10 +111,11 @@ It's a static file, so anything works. `index.html` just goes at the web root.
 
 ## Privacy
 
-No analytics, no cookies, no third-party scripts. The only outside request is Google Fonts (Orbitron for my name, Space Grotesk for headings, JetBrains Mono for everything else). The site keeps two small things in the visitor's own browser:
+No analytics, no cookies, no third-party scripts. The only outside requests are Google Fonts (Orbitron for my name, Space Grotesk for headings, JetBrains Mono for everything else) and, only while the bitcoin orange theme is on (or someone runs `btc`), a once-a-minute price check against Coinbase's public spot price API, with CoinGecko as a backup. Nothing identifying is sent. The site keeps three small things in the visitor's own browser:
 
 - `localStorage.theme`: the color they picked
 - `sessionStorage.booted`: so the boot screen only shows once per session
+- `localStorage.logoFound`: stops the logo hint once they've clicked it
 
 If I ever want to drop Google Fonts, I can self-host the three fonts and swap the `<link>` tags for `@font-face` rules. If the fonts don't load, it falls back to system fonts without breaking anything.
 
