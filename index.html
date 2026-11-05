@@ -17,13 +17,16 @@
 
   <script>
     // Runs before first paint so nothing flashes: decides whether to show my boot
-    // screen (once per session) and applies whatever theme the visitor picked last time.
+    // screen (once per session) and re-applies the theme if they picked one earlier this visit.
     (function () {
       var d = document.documentElement;
       try {
         if (!sessionStorage.getItem("booted") && !matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("booting");
         var T = { sky: ["5 147 198", "216 57 149"], bitcoin: ["247 147 26", "255 194 61"], mint: ["124 242 196", "167 139 250"], violet: ["167 139 250", "124 242 196"], amber: ["251 191 36", "244 114 182"], rose: ["251 113 133", "129 140 248"], ice: ["125 211 252", "167 139 250"] };
-        var saved = localStorage.getItem("theme"), name = T[saved] ? saved : "sky";
+        // Theme only sticks for this visit (survives a refresh, resets to Sky once the tab is closed).
+        // Also clears the old permanently-saved theme from earlier versions of the site.
+        localStorage.removeItem("theme");
+        var saved = sessionStorage.getItem("theme"), name = T[saved] ? saved : "sky";
         d.setAttribute("data-theme", name);
         d.style.setProperty("--a", T[name][0]); d.style.setProperty("--b", T[name][1]);
       } catch (e) { d.setAttribute("data-theme", "sky"); }
@@ -203,6 +206,20 @@
       animation: ping 2s cubic-bezier(0,0,.2,1) infinite;
     }
     @keyframes ping { 75%, 100% { transform: scale(3); opacity: 0; } }
+
+    /* "Change theme" hint: the dot grows and flips through every theme's color */
+    .theme-btn.nudge .pulse { animation: themepeek 1.8s ease-in-out; }
+    @keyframes themepeek {
+      0%   { transform: scale(1);   background: var(--accent); box-shadow: none; }
+      10%  { transform: scale(1.9); background: #0593C6; box-shadow: 0 0 10px #0593C6; }
+      22%  { background: #F7931A; box-shadow: 0 0 10px #F7931A; }
+      34%  { background: #7CF2C4; box-shadow: 0 0 10px #7CF2C4; }
+      46%  { background: #A78BFA; box-shadow: 0 0 10px #A78BFA; }
+      58%  { background: #FBBF24; box-shadow: 0 0 10px #FBBF24; }
+      70%  { background: #FB7185; box-shadow: 0 0 10px #FB7185; }
+      82%  { transform: scale(1.9); background: #7DD3FC; box-shadow: 0 0 10px #7DD3FC; }
+      100% { transform: scale(1);   background: var(--accent); box-shadow: none; }
+    }
 
     /* ---------- Sections ---------- */
     section { margin-bottom: 34px; }
@@ -459,8 +476,8 @@
       .link { padding: 2px 0; }
       footer { margin-top: clamp(8px, 2svh, 52px); }
     }
-    /* Really short screens (iPhone SE with the toolbar up) */
-    @media (max-width: 600px) and (max-height: 620px) {
+    /* Really short screens (iPhone SE / mini-size phones with the toolbar up) */
+    @media (max-width: 600px) and (max-height: 650px) {
       body { font-size: 14px; line-height: 1.42; }
       h2 { font-size: 1.15rem; }
       .status { margin-bottom: 10px; }
@@ -576,12 +593,55 @@
     html[data-theme="bitcoin"] .t-b { color:#ffc23d; }
     html[data-theme="bitcoin"] .term { background:rgba(12,10,8,.9); }
 
-    /* Live BTC price in the status line (bitcoin theme only); flashes green/red when it moves */
-    .btc-price { white-space: nowrap; }
-    .btc-price svg { width: 11px; height: 11px; vertical-align: -1px; margin-right: 4px; }
-    .btc-price b { font-weight: 500; color: #f7931a; transition: color .4s; }
-    .btc-price.up b { color: #3ddc84; }
-    .btc-price.down b { color: #ff5d6c; }
+    /* ---------- Live BTC ticker (bitcoin orange theme only), pinned top-right over the page ----------
+       Light sweeps around the border, the coin flips every few seconds, digits roll like an
+       odometer when the price updates, and there's a live dot + 24h change. Tap it for coins. */
+    @property --tk-ang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+    .btc-price {
+      position: fixed; z-index: 6; cursor: pointer;
+      top: max(14px, env(safe-area-inset-top)); right: max(14px, env(safe-area-inset-right));
+      padding: 1.5px; border-radius: 999px;
+      background:
+        conic-gradient(from var(--tk-ang), transparent 0 55%, #f7931a 72%, #ffe29a 80%, #ffc23d 86%, transparent 100%),
+        rgba(247,147,26,.28);
+      box-shadow: 0 0 24px rgba(247,147,26,.22), 0 4px 18px rgba(0,0,0,.45);
+      animation: tk-in .8s cubic-bezier(.3,1.5,.5,1) both, tk-spin 3.2s linear infinite;
+      -webkit-tap-highlight-color: transparent;
+      transition: box-shadow .3s;
+    }
+    .btc-price:hover { box-shadow: 0 0 34px rgba(247,147,26,.45), 0 4px 18px rgba(0,0,0,.45); }
+    .btc-price:focus-visible { outline: 1px dashed #f7931a; outline-offset: 3px; }
+    @keyframes tk-spin { to { --tk-ang: 360deg; } }
+    @keyframes tk-in { from { transform: translateY(-70px) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
+    .tk-inner {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 13px 6px 9px; border-radius: 999px;
+      background: rgba(13,10,7,.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      font-size: 14px; line-height: 1.25; white-space: nowrap;
+    }
+    .tk-coin { width: 18px; height: 18px; display: inline-block; perspective: 80px; }
+    .tk-coin svg { width: 100%; height: 100%; display: block; animation: tk-flip 4s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(247,147,26,.7)); }
+    @keyframes tk-flip { 0%, 76% { transform: rotateY(0); } 100% { transform: rotateY(360deg); } }
+    .tk-label { color: var(--muted); font-size: 11px; letter-spacing: .1em; }
+    .tk-price { display: inline-flex; color: #f7931a; font-weight: 500; transition: color .4s; }
+    .btc-price.up .tk-price { color: #3ddc84; }
+    .btc-price.down .tk-price { color: #ff5d6c; }
+    .tk-chg { font-size: 11.5px; }
+    .tk-chg.pos { color: #3ddc84; }
+    .tk-chg.neg { color: #ff5d6c; }
+    .tk-live { position: relative; width: 6px; height: 6px; border-radius: 50%; background: #3ddc84; flex: none; }
+    .tk-live::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #3ddc84; animation: ping 2s cubic-bezier(0,0,.2,1) infinite; }
+    /* odometer digits */
+    .dg { display: inline-block; height: 1.25em; overflow: hidden; }
+    .dg-col { display: flex; flex-direction: column; transition: transform .9s cubic-bezier(.2,.8,.2,1); }
+    .dg-col > span { height: 1.25em; line-height: 1.25em; }
+    /* On narrow phones where the full ticker would touch my logo, drop the 24h % */
+    .btc-price.compact .tk-chg { display: none; }
+    @media (max-width: 600px) {
+      .tk-label { display: none; }
+      .tk-inner { font-size: 13px; gap: 7px; padding: 5px 11px 5px 8px; }
+      .tk-coin { width: 16px; height: 16px; }
+    }
 
     /* No double-tap zoom on phones, so double-tap can start the matrix */
     html { touch-action: manipulation; }
@@ -630,8 +690,8 @@
       <h1 id="name" data-text="Evan Barth">Evan Barth</h1>
 
       <div class="status rise" style="--i:0">
-        <button class="theme-btn" id="theme-btn" type="button" aria-label="Change accent color" title="Change accent color"><span class="pulse"></span></button>
-        <span>Springfield, MO · <span id="clock">--:--</span> CT<span class="btc-price" id="btc-price" hidden> · <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#F7931A"/><g transform="translate(50 50) rotate(14) scale(2.55) translate(-48.2 -40)" fill="none" stroke="#fff"><path d="M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7" stroke-width="4" stroke-linecap="square"/><path d="M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6" stroke-width="2.4"/></g></svg><b id="btc-val"></b></span></span>
+        <button class="theme-btn" id="theme-btn" type="button" aria-label="Change theme" title="Change theme"><span class="pulse"></span></button>
+        <span>Springfield, MO · <span id="clock">--:--</span> CT</span>
       </div>
 
       <section>
@@ -647,9 +707,9 @@
         <h2 class="rise" style="--i:5">What</h2>
         <ul>
           <li class="prompt rise" style="--i:6">Leading IT Across <span class="hl">20+</span> Locations</li>
-          <li class="prompt rise" style="--i:7">IT Strategy &amp; Infrastructure</li>
-          <li class="prompt rise" style="--i:8">Microsoft 365 &amp; Identity</li>
-          <li class="prompt rise" style="--i:9">Cybersecurity &amp; Automation</li>
+          <li class="prompt rise" style="--i:7">Brought IT Operations In-House</li>
+          <li class="prompt rise" style="--i:8">M365, Entra ID &amp; SharePoint</li>
+          <li class="prompt rise" style="--i:9">Infrastructure, Network &amp; Security</li>
         </ul>
       </section>
 
@@ -699,6 +759,17 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Live BTC price ticker, top-right corner (bitcoin orange theme only) -->
+  <div class="btc-price" id="btc-price" role="button" tabindex="0" aria-label="Bitcoin price" hidden>
+    <div class="tk-inner" aria-hidden="true">
+      <span class="tk-coin"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#F7931A"/><g transform="translate(50 50) rotate(14) scale(2.55) translate(-48.2 -40)" fill="none" stroke="#fff"><path d="M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7" stroke-width="4" stroke-linecap="square"/><path d="M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6" stroke-width="2.4"/></g></svg></span>
+      <span class="tk-label">BTC</span>
+      <b class="tk-price" id="btc-val"></b>
+      <span class="tk-chg" id="btc-chg" hidden></span>
+      <span class="tk-live"></span>
+    </div>
+  </div>
 
   <!-- "To the moon": orange screen flash + the real Bitcoin logo popping over mine -->
   <div class="flash" id="flash" aria-hidden="true"></div>
@@ -768,7 +839,7 @@
       root.style.setProperty("--a", t.a.join(" "));
       root.style.setProperty("--b", t.b.join(" "));
       document.querySelector('meta[name="theme-color"]').content = t.bg;
-      try { localStorage.setItem("theme", name); } catch {}
+      try { sessionStorage.setItem("theme", name); } catch {}   // this visit only
       bitcoinMode(name === "bitcoin", celebrate);
       return true;
     }
@@ -1063,9 +1134,9 @@
 
     /* ---------- Bitcoin mode (bitcoin orange theme) ----------
        Picking it rains orange coins from the top. While it's on, the status line shows the
-       live BTC price from Coinbase's public API (CoinGecko as backup), refreshed every minute.
+       live BTC price + 24h change (worked out from Coinbase's 5-min candles), refreshed every 20s.
        Nothing is fetched unless this theme is on; if both fail the price just stays hidden. */
-    const priceEl = $("#btc-price"), priceVal = $("#btc-val");
+    const priceEl = $("#btc-price"), priceVal = $("#btc-val"), chgEl = $("#btc-chg");
     const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
     let lastPrice = null, priceTimer = null;
     function shower(n) {
@@ -1077,36 +1148,111 @@
         decay: 0.004, life: 1, c: "#f7931a",
       });
     }
-    async function getPrice() {
+    // Price + true rolling 24h change, worked out here so I know exactly what's compared:
+    //   now     = last trade from Coinbase's ticker (spot price / CoinGecko as backups)
+    //   24h ago = price exactly 24h ago, read from Coinbase's 5-minute candles
+    //             (cached 5 min; falls back to CoinGecko's 24h %, otherwise the % is hidden)
+    const CB = "https://api.exchange.coinbase.com/products/BTC-USD";
+    let ref24 = null;
+    async function getRef24h() {
+      if (ref24 && Date.now() - ref24.fetched < 5 * 60 * 1000) return ref24;
       try {
-        const r = await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", { cache: "no-store" });
-        const v = parseFloat((await r.json())?.data?.amount);
-        if (v > 0) return v;
-      } catch {}
-      try {
-        const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
-        const v = (await r.json())?.bitcoin?.usd;
-        if (v > 0) return v;
+        const rows = await (await fetch(`${CB}/candles?granularity=300`, { cache: "no-store" })).json();   // [time, low, high, open, close, vol], newest first, ~25h
+        const target = Date.now() / 1000 - 86400;
+        let price = null, at = null;
+        for (const row of rows) {
+          const [t, , , op, cl] = row;
+          if (t <= target && target < t + 300) { price = op + (cl - op) * ((target - t) / 300); at = target; break; }
+        }
+        if (price == null) {   // tiny gap in the data: take the nearest candle within 30 min
+          const near = rows.filter(Array.isArray).sort((a, b) => Math.abs(a[0] - target) - Math.abs(b[0] - target))[0];
+          if (near && Math.abs(near[0] - target) < 1800) { price = near[4]; at = near[0] + 300; }
+        }
+        if (price > 0) return (ref24 = { price, at: at * 1000, fetched: Date.now(), src: "Coinbase 5-min candles" });
       } catch {}
       return null;
     }
+    async function getQuote() {
+      let price = null, change = null, ref = null, src = "";
+      try { const j = await (await fetch(`${CB}/ticker`, { cache: "no-store" })).json(); if (parseFloat(j?.price) > 0) { price = parseFloat(j.price); src = "Coinbase"; } } catch {}
+      if (price == null) try { const j = await (await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", { cache: "no-store" })).json(); if (parseFloat(j?.data?.amount) > 0) { price = parseFloat(j.data.amount); src = "Coinbase spot"; } } catch {}
+      if (price != null) {
+        ref = await getRef24h();
+        if (ref) change = (price - ref.price) / ref.price * 100;
+        // (Coinbase's 24h stats "open" is deliberately NOT used: it disagreed with every other 24h figure.)
+      }
+      if (price == null || change == null) try {
+        const j = await (await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true")).json();
+        if (price == null && j?.bitcoin?.usd > 0) { price = j.bitcoin.usd; src = "CoinGecko"; }
+        if (change == null && j?.bitcoin?.usd_24h_change != null) { change = j.bitcoin.usd_24h_change; ref = { price: null, at: null, src: "CoinGecko 24h change" }; }
+      } catch {}
+      return price == null ? null : { price, change, ref, src };
+    }
+    async function getPrice() { return (await getQuote())?.price ?? null; }
+
+    // Odometer: each digit is a 0–9 column that slides to the right number
+    function setDigits(str) {
+      const same = priceVal.dataset.s && priceVal.dataset.s.length === str.length;
+      if (!same) {
+        priceVal.innerHTML = [...str].map((ch) => /\d/.test(ch)
+          ? `<span class="dg"><span class="dg-col">${[..."0123456789"].map((d) => `<span>${d}</span>`).join("")}</span></span>`
+          : `<span>${ch}</span>`).join("");
+      }
+      const roll = () => [...str].forEach((ch, i) => {
+        const col = priceVal.children[i]?.firstElementChild;
+        if (col && /\d/.test(ch)) col.style.transform = `translateY(${-ch * 1.25}em)`;
+      });
+      same ? roll() : requestAnimationFrame(() => requestAnimationFrame(roll));   // first time: roll up from 0
+      priceVal.dataset.s = str;
+    }
+
     async function updatePrice() {
-      const v = await getPrice();
-      if (themeName !== "bitcoin" || v == null) return;
-      priceVal.textContent = usd.format(v);
+      const q = await getQuote();
+      if (themeName !== "bitcoin" || !q) return;
+      const str = usd.format(q.price);
+      setDigits(str);
+      let chgText = "";
+      if (q.change != null && isFinite(q.change)) {
+        chgText = `${q.change >= 0 ? "▲" : "▼"} ${Math.abs(q.change).toFixed(innerWidth < 600 ? 1 : 2)}%`;
+        chgEl.textContent = chgText;
+        chgEl.className = "tk-chg " + (q.change >= 0 ? "pos" : "neg");
+        chgEl.hidden = false;
+      } else chgEl.hidden = true;
+      priceEl.setAttribute("aria-label", `Bitcoin ${str}${chgText ? ", " + chgText.replace("▲", "up").replace("▼", "down") + " in 24 hours" : ""}. Tap for coins.`);
       priceEl.hidden = false;
-      if (lastPrice != null && Math.round(v) !== Math.round(lastPrice)) {
+      fitTicker();
+      if (lastPrice != null && Math.round(q.price) !== Math.round(lastPrice)) {
         priceEl.classList.remove("up", "down"); void priceEl.offsetWidth;
-        priceEl.classList.add(v > lastPrice ? "up" : "down");
+        priceEl.classList.add(q.price > lastPrice ? "up" : "down");
         setTimeout(() => priceEl.classList.remove("up", "down"), 1600);
       }
-      lastPrice = v;
+      lastPrice = q.price;
     }
+    // If the full ticker would run into the logo (smaller phones), switch to the compact version.
+    // Uses layout positions (offset*), so the drop-in animation doesn't throw it off.
+    function fitTicker() {
+      if (priceEl.hidden) return;
+      priceEl.classList.remove("compact");
+      const logo = $("#mark-wrap").getBoundingClientRect();
+      const top = priceEl.offsetTop, bottom = top + priceEl.offsetHeight, left = priceEl.offsetLeft;
+      if (bottom > logo.top - 6 && left < logo.right + 10) priceEl.classList.add("compact");
+    }
+    addEventListener("resize", fitTicker);
+
+    // Tap the ticker: coins burst out of it and the price refreshes
+    function tickerPop() {
+      const r = priceEl.getBoundingClientRect();
+      burst(r.left + 22, r.top + r.height / 2, 16);
+      updatePrice();
+    }
+    priceEl.addEventListener("click", tickerPop);
+    priceEl.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tickerPop(); } });
+
     function bitcoinMode(on, celebrate) {
       clearInterval(priceTimer);
       if (!on) { priceEl.hidden = true; return; }
       updatePrice();
-      priceTimer = setInterval(updatePrice, 60000);
+      priceTimer = setInterval(updatePrice, 20000);
       if (celebrate) shower(innerWidth < 600 ? 26 : 40);
     }
     if (themeName === "bitcoin") bitcoinMode(true, false);
@@ -1125,7 +1271,7 @@
     // button or my logo = a quick matrix rain that spreads out from where you tapped.
     let lastTap = { t: 0, x: 0, y: 0 };
     addEventListener("pointerdown", (e) => {
-      if (e.target.closest("a, button, input, .term, .boot, #mark")) return;
+      if (e.target.closest("a, button, input, .term, .boot, #mark, .btc-price")) return;
       ripple(e.clientX, e.clientY);
       const now = performance.now();
       if (now - lastTap.t < 330 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 40) {
@@ -1201,6 +1347,24 @@
       if (!document.hidden && term.hidden) { restart(markWrap, "nudge"); hintsLeft--; }
       hintTimer = setTimeout(hintLogo, 6000);
     }
+    /* ---------- Theme dot hint: color-cycle at 6s, then every 6s (max 5). The logo hint fires at
+       3s, 9s, 15s…, so these always land halfway between them and never overlap. Stops for good once someone changes the theme. ---------- */
+    const themeBtn = $("#theme-btn");
+    let themeFound = false, themeHintsLeft = 5, themeHintTimer;
+    try { themeFound = localStorage.getItem("themeFound") === "1"; } catch {}
+    function hintTheme() {
+      if (themeFound || reduce || themeHintsLeft <= 0) return;
+      if (!document.hidden && term.hidden) { restart(themeBtn, "nudge"); themeHintsLeft--; }
+      themeHintTimer = setTimeout(hintTheme, 6000);
+    }
+    function foundTheme() {
+      if (themeFound) return;
+      themeFound = true; clearTimeout(themeHintTimer); themeBtn.classList.remove("nudge");
+      try { localStorage.setItem("themeFound", "1"); } catch {}
+    }
+    themeBtn.addEventListener("click", foundTheme);
+    themeBtn.addEventListener("animationend", (e) => { if (e.animationName === "themepeek") themeBtn.classList.remove("nudge"); });
+
     markWrap.addEventListener("animationend", (e) => { if (e.animationName === "halo" && e.target.classList.contains("halo-2")) markWrap.classList.remove("nudge"); });
     mark.addEventListener("click", () => {
       if (logoFound) return;
@@ -1275,7 +1439,8 @@
       }],
       theme: [`theme [${Object.keys(THEMES).join("|")}]`, (args) => {
         if (!args[0]) return print(Object.keys(THEMES).map((n) => `<span style="color:rgb(${THEMES[n].a.join(",")})">${n === themeName ? "● " : "  "}${n}</span>`).join("\n"));
-        setTheme(args[0].toLowerCase(), true)
+        setTheme(args[0].toLowerCase(), true) && foundTheme();
+        THEMES[THEME_ALIASES[args[0].toLowerCase()] || args[0].toLowerCase()]
           ? print(`<span class="t-acc">Theme set to ${esc(THEMES[themeName].label || themeName)}.</span>`)
           : print(`<span class="t-err">unknown theme: ${esc(args[0])}</span>`);
       }],
@@ -1302,8 +1467,13 @@
       ping: ["", () => print("pong"), true],
       btc: ["", async () => {
         print('<span class="t-dim">fetching…</span>');
-        const v = await getPrice();
-        print(v ? `<span style="color:#f7931a">₿ 1 BTC = ${usd.format(v)}</span> <span class="t-dim">(Coinbase spot)</span>` : '<span class="t-err">price feed unavailable right now</span>');
+        const q = await getQuote();
+        if (!q) return print('<span class="t-err">price feed unavailable right now</span>');
+        const usd2 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+        const when = (ms) => new Date(ms).toLocaleString("en-US", { timeZone: CONFIG.tz, weekday: "short", hour: "numeric", minute: "2-digit" }) + " CT";
+        print(`<span style="color:#f7931a">₿ 1 BTC = ${usd2.format(q.price)}</span> <span class="t-dim">(${esc(q.src)}, now)</span>`);
+        if (q.ref?.price) print(`<span class="t-dim">  24h ago:</span> ${usd2.format(q.ref.price)} <span class="t-dim">${q.ref.at ? "at " + when(q.ref.at) : ""} (${esc(q.ref.src)})</span>`);
+        if (q.change != null) print(`<span class="t-dim">  change: </span><span style="color:${q.change >= 0 ? "#3ddc84" : "#ff5d6c"}">${q.change >= 0 ? "▲" : "▼"} ${Math.abs(q.change).toFixed(2)}%</span> <span class="t-dim">${q.ref?.src === "CoinGecko 24h change" ? "(CoinGecko)" : ""}</span>`);
       }, true],
     };
 
@@ -1362,7 +1532,8 @@
         const r = mark.getBoundingClientRect();
         ripple(r.left + r.width / 2, r.top + r.height / 2);
       }, 500);
-      hintTimer = setTimeout(hintLogo, 3000);   // first nudge 3s after everything settles
+      hintTimer = setTimeout(hintLogo, 3000);        // logo nudge 3s after everything settles
+      themeHintTimer = setTimeout(hintTheme, 6000);  // theme dot nudge in between logo nudges
     }
 
     if (root.classList.contains("booting")) {
