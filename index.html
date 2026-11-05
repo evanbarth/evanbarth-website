@@ -240,6 +240,9 @@
     li { padding: 1px 0; }
     .hl { color: var(--accent); font-weight: 500; text-shadow: 0 0 12px rgb(var(--a) / 0.5); }
     li.prompt::before { content: "› "; color: var(--accent); opacity: 0.7; }
+    /* Detail line under the item above it: indented to line up with that item's text */
+    li.sub { padding-left: 2ch; color: var(--muted); }
+    li.sub::before { content: "↳ "; color: var(--accent); opacity: 0.8; }
 
     /* Little hex between IT Director and Girl Dad, same shape as my logo */
     .sep { display: inline-block; width: 8px; height: 8px; margin: 0 7px; vertical-align: 0; }
@@ -476,6 +479,11 @@
       .link { padding: 2px 0; }
       footer { margin-top: clamp(8px, 2svh, 52px); }
     }
+    /* Narrow phones (375px iPhones, 360px Androids): 1px smaller text so the longest
+       What lines (35 characters) stay on one line */
+    @media (max-width: 389px) {
+      body { font-size: 14px; }
+    }
     /* Really short screens (iPhone SE / mini-size phones with the toolbar up) */
     @media (max-width: 600px) and (max-height: 650px) {
       body { font-size: 14px; line-height: 1.42; }
@@ -707,9 +715,9 @@
         <h2 class="rise" style="--i:5">What</h2>
         <ul>
           <li class="prompt rise" style="--i:6">Leading IT Across <span class="hl">20+</span> Locations</li>
-          <li class="prompt rise" style="--i:7">Brought IT Operations In-House</li>
-          <li class="prompt rise" style="--i:8">M365, Entra ID &amp; SharePoint</li>
-          <li class="prompt rise" style="--i:9">Infrastructure, Network &amp; Security</li>
+          <li class="prompt rise" style="--i:7">Brought Core IT Operations In-House</li>
+          <li class="prompt rise" style="--i:8">Migrating Core Systems to the Cloud</li>
+          <li class="sub rise" style="--i:9">Identity, Batching, &amp; Accounting</li>
         </ul>
       </section>
 
@@ -1285,7 +1293,7 @@
     if (!reduce) requestAnimationFrame(loop);
 
     /* ---------- Easter eggs ----------
-       Matrix rain: double-click the background (short), Konami code or `matrix` (long).
+       Matrix rain: double-click the background (short); Konami code or `matrix` (long).
        Logo: every click = spin + ₿ burst + name glitch.
        5 quick clicks (or `moon` in the terminal) = hyperspin, Bitcoin logo flash, coins up, rockets. */
     function matrix(ms = 6000, originX = null) {
