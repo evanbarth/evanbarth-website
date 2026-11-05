@@ -4,12 +4,12 @@ My personal site. One `index.html`, no build step, no framework, no tracking. I 
 
 ## What's in it
 
-- **One file.** All the HTML, CSS and JavaScript live in `index.html`, so I can drop it on any static host.
+- **One file.** All the HTML, CSS, and JavaScript live in `index.html`, so I can drop it on any static host.
 - **Dot field background.** A canvas grid that ripples on its own, reacts to the cursor, and sends a shockwave when you click.
 - **My E₿ logo.** A hand-drawn SVG hexagon that draws itself on load and tilts toward the cursor. The B has the Bitcoin strokes, and they turn orange on hover. Click it and see what happens. Until someone does, it wiggles and throws off golden rings every few seconds as a hint.
 - **Boot sequence.** A quick startup log the first time someone visits in a session. Any key or click skips it.
 - **A real(ish) terminal.** Press `/` or click **open terminal**. It has history, tab completion, and a few secrets.
-- **Themes.** Sky is my default: dark navy-black with sky blue and hot pink. There's also **bitcoin orange** (the official `#F7931A`), which rains coins when you pick it, turns the dots near your cursor into ₿s, switches the matrix to block-hash hex and shows a live BTC ticker in the top-right corner: price with rolling odometer digits, 24h change, a glowing border and a flipping coin. Tap it for coins. Mint, violet, amber, rose and ice are there too. Click the pulsing dot next to my location (it flashes through the theme colors now and then as a hint) or run `theme <name>`. The pick sticks while you're on the site, and everyone starts back on Sky next visit.
+- **Themes.** Sky is my default: dark navy-black with sky blue and hot pink. There's also **bitcoin orange** (the official `#F7931A`), which rains coins when you pick it, turns the dots near your cursor into ₿s, switches the matrix to block-hash hex, and shows a live BTC ticker in the top-right corner: price with rolling odometer digits, 24h change, a glowing border, and a flipping coin. Tap it for coins. Mint, violet, amber, rose, and ice are there too. Click the pulsing dot next to my location (it flashes through the theme colors now and then as a hint) or run `theme <name>`. The pick sticks while you're on the site, and everyone starts back on Sky next visit.
 - **Hidden email.** My address is stored encoded and only gets put together in the browser when someone clicks, so it's never sitting in the page source.
 - **My local time.** The status line shows what time it is here in Springfield.
 - **Accessible.** Keyboard friendly, visible focus states, labels for screen readers, and everything holds still for anyone with reduced motion turned on.
@@ -39,10 +39,10 @@ My personal site. One `index.html`, no build step, no framework, no tracking. I 
 <details>
 <summary>Spoilers (don't open if you'd rather find them yourself)</summary>
 
-- Commands that aren't listed: `sudo`, `rm`, `hello`, `hi`, `ping`, `btc` (live price, the price 24h ago and the change, so you can check the ticker's math)
+- Commands that aren't listed: `sudo`, `rm`, `hello`, `hi`, `ping`, `btc` (live price, the price 24h ago, and the change, so you can check the ticker's math)
 - Double-click (or double-tap on a phone) anywhere on the background for a quick matrix rain that spreads out from where you clicked
 - The Konami code (`↑ ↑ ↓ ↓ ← → ← → B A`) or `matrix` runs the long version
-- Clicking my logo throws ₿ coins and glitches my name. Click it five times fast (or type `moon` in the terminal) and it goes to the moon: the logo hyperspins, the Bitcoin logo flashes over it, coins fly up and rockets launch
+- Clicking my logo throws ₿ coins and glitches my name. Click it five times fast (or type `moon` in the terminal) and it goes to the moon: the logo hyperspins, the Bitcoin logo flashes over it, coins fly up, and rockets launch
 
 </details>
 
@@ -87,7 +87,7 @@ Then paste the output into `CONFIG.emailEnc`.
 
 Add it to `THEMES` in the main script **and** to the `T` object in the little `<head>` script. The head one applies the saved theme before the page paints. If I skip it, the page flashes the default before switching.
 
-In `THEMES`: `a` is the accent, `b` is the second color, `grey` is the resting dot color, and `bg` is the browser bar color (all colors are RGB triplets except `bg`). A simple accent theme only needs those. A full look like Sky also gets its own `html[data-theme="name"]` block in the CSS for the background, glows and anything else that changes.
+In `THEMES`: `a` is the accent, `b` is the second color, `grey` is the resting dot color, and `bg` is the browser bar color (all colors are RGB triplets except `bg`). A simple accent theme only needs those. A full look like Sky also gets its own `html[data-theme="name"]` block in the CSS for the background, glows, and anything else that changes.
 
 ### If I want a different default
 
@@ -122,7 +122,7 @@ If I ever want to drop Google Fonts, I can self-host the three fonts and swap th
 
 ## Browser support
 
-Current Chrome, Edge, Firefox and Safari, on desktop and mobile.
+Current Chrome, Edge, Firefox, and Safari, on desktop and mobile.
 
 ## License
 
