@@ -4,7 +4,7 @@ My personal site. One `index.html`, no build step, no framework, no tracking. I 
 
 ## What's in it
 
-- **One file.** All the HTML, CSS, and JavaScript live in `index.html`, so I can drop it on any static host.
+- **One page file.** All the HTML, CSS, and JavaScript live in `site/index.html`, so I can drop it on any static host. The only other things in `site/` are small static files that sit next to it: icons, the link-preview image, the 404 page, `robots.txt`, `sitemap.xml`, and the Azure config.
 - **Dot field background.** A canvas grid that ripples on its own, reacts to the cursor, and sends a shockwave when you click.
 - **My E₿ logo.** A hand-drawn SVG hexagon that draws itself on load and tilts toward the cursor. The B has the Bitcoin strokes, and they turn orange on hover. Click it and see what happens. Until someone does, it wiggles and throws off golden rings every few seconds as a hint.
 - **Boot sequence.** A quick startup log the first time someone visits in a session. Any key or click skips it.
@@ -34,7 +34,7 @@ My personal site. One `index.html`, no build step, no framework, no tracking. I 
 | `clear` | Clears the screen |
 | `exit` | Closes the terminal |
 
-**Shortcuts:** `/` or `` ` `` opens it, `Esc` closes it, `Tab` completes, `↑` / `↓` scroll back through history.
+**Shortcuts:** `/` or `` ` `` opens it, `Esc` closes it (so does the red dot, or a click or tap anywhere outside it), `Tab` completes, `↑` / `↓` scroll back through history.
 
 <details>
 <summary>Spoilers (don't open if you'd rather find them yourself)</summary>
@@ -48,11 +48,30 @@ My personal site. One `index.html`, no build step, no framework, no tracking. I 
 
 ## Notes to self: changing things
 
-Everything personal is in two spots.
+### What's where
+
+```
+site/                          everything in here is published, nothing outside it is
+  index.html                   the whole page
+  404.html                     what a bad URL shows
+  og.png                       the picture in link previews (1200×630)
+  favicon.svg, favicon.ico, apple-touch-icon.png
+  fonts/                       the font files (see Fonts, under Privacy)
+  robots.txt, sitemap.xml
+  staticwebapp.config.json     Azure settings: security headers, font caching, and the 404 page
+.github/workflows/             the deploy to Azure
+README.md                      this file (not published)
+```
+
+Everything personal on the page is in three spots.
 
 ### The page itself (HTML)
 
 **Who**, **What**, **Where**, my name, and the LinkedIn/GitHub URLs are plain HTML inside `<main>`. The terminal's `ls` and `open` read the links straight from the page, so I only have to change a URL in one place.
+
+### The `<head>` (what Google and link previews see)
+
+My job title and city are repeated at the top of `index.html` in the `<title>`, the description, the `og:` tags, and the small `application/ld+json` block. They're also baked into `og.png`. If my title, city, or LinkedIn/GitHub URLs change, update those too, and remake `og.png` (a 1200×630 screenshot of the logo, name, and title on the Sky background).
 
 ### `CONFIG` (top of the `<script>`)
 
@@ -87,7 +106,7 @@ Then paste the output into `CONFIG.emailEnc`.
 
 Add it to `THEMES` in the main script **and** to the `T` object in the little `<head>` script. The head one applies the saved theme before the page paints. If I skip it, the page flashes the default before switching.
 
-In `THEMES`: `a` is the accent, `b` is the second color, `grey` is the resting dot color, and `bg` is the browser bar color (all colors are RGB triplets except `bg`). A simple accent theme only needs those. A full look like Sky also gets its own `html[data-theme="name"]` block in the CSS for the background, glows, and anything else that changes.
+In `THEMES`: `a` is the accent, `b` is the second color, `grey` is the resting dot color, and `bg` is the browser bar color (all colors are RGB triplets except `bg`). A simple accent theme only needs those. A full look like Sky also gets its own `html[data-theme="name"]` block in the CSS for the background, glows, and anything else that changes. If that block sets its own `--bg`, give it a `--faint` too: that's the footer text color, and it needs to stay at least 4.5:1 against the background to be readable.
 
 ### If I want a different default
 
@@ -103,22 +122,28 @@ Add an entry to `COMMANDS`: `name: ["description", (args) => { ... }]`. Put `tru
 
 ## Deploying
 
-It's a static file, so anything works. `index.html` just goes at the web root.
+The site runs on **Azure Static Web Apps**. Every push to `main` runs the workflow in `.github/workflows/`, which uploads the `site/` folder as-is (there's nothing to build). A pull request into `main` gets its own temporary preview URL, which Azure posts as a comment on the PR and removes when the PR closes. That's the place to check a change before it goes live.
 
-- **Cloudflare Pages:** connect the repo, leave the build command empty, set the output directory to `/`, then add the domain in the project settings.
-- **GitHub Pages:** Settings → Pages → deploy from `main`, folder `/`. Add a `CNAME` file with `evanbarth.com` and point DNS at GitHub.
-- **Anywhere else:** upload `index.html` as-is.
+- **Only `site/` is published.** This README and anything else outside that folder never reach the web.
+- **`site/staticwebapp.config.json`** sets the security headers and points bad URLs at `404.html`. Its `Content-Security-Policy` line is a list of the only outside addresses the page may talk to (just Coinbase and CoinGecko, for the ticker). If I ever add another outside service, it has to be added there or the browser will block it.
+- **Domain:** `evanbarth.com` should be set as the default under Custom domains in the Azure portal, so `www` and the `azurestaticapps.net` address redirect to it.
+
+It's still just static files, so moving is easy: upload the contents of `site/` to any static host. Only `staticwebapp.config.json` is Azure-specific.
 
 ## Privacy
 
-No analytics, no cookies, no third-party scripts. The only outside requests are Google Fonts (Orbitron for my name, Space Grotesk for headings, JetBrains Mono for everything else) and, only while the bitcoin orange theme is on (or someone runs `btc`), a price check every 20 seconds against Coinbase's public market-data APIs (the latest trade, plus 5-minute price history every 5 minutes to work out the true 24h change), with CoinGecko as a backup. Nothing identifying is sent. The site keeps four small things in the visitor's own browser:
+No analytics, no cookies, no third-party scripts. The fonts (Orbitron for my name, Space Grotesk for headings, JetBrains Mono for everything else) are served from the site itself, so a normal visit makes no outside requests at all. The one exception: only while the bitcoin orange theme is on (or someone runs `btc`), a price check every 20 seconds against Coinbase's public market-data APIs (the latest trade, plus 5-minute price history every 5 minutes to work out the true 24h change), with CoinGecko as a backup. Nothing identifying is sent. The site keeps four small things in the visitor's own browser:
 
 - `sessionStorage.theme`: the theme they picked, for this visit only (gone once they close the tab)
 - `sessionStorage.booted`: so the boot screen only shows once per session
 - `localStorage.logoFound`: stops the logo hint once they've clicked it
 - `localStorage.themeFound`: stops the theme dot hint once they've changed the theme
 
-If I ever want to drop Google Fonts, I can self-host the three fonts and swap the `<link>` tags for `@font-face` rules. If the fonts don't load, it falls back to system fonts without breaking anything.
+### Fonts
+
+The font files in `site/fonts/` are the Latin subsets from Google Fonts (plus JetBrains Mono's extended Latin subset, which is the one with ₿ in it and only downloads when a ₿ is on screen), all under the SIL Open Font License 1.1 (which allows self-hosting): JetBrains Mono by the JetBrains Mono Project Authors, Space Grotesk by the Space Grotesk Project Authors, and Orbitron by the Orbitron Project Authors. The `@font-face` rules at the top of the `<style>` block point at them. If a font doesn't load, the page falls back to system fonts without breaking anything.
+
+Azure tells browsers to keep these files for a year without re-checking. If I ever replace one, give the new file a new name (and update the `@font-face` and `preload` lines), or returning visitors will keep the old one.
 
 ## Browser support
 
