@@ -3,17 +3,44 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Evan Barth</title>
-  <meta name="description" content="Evan Barth — IT Director. Infrastructure, identity, and security." />
+  <title>Evan Barth — IT Director · Springfield, MO</title>
+  <meta name="description" content="Evan Barth, IT Director in Springfield, Missouri. Leading IT operations for a multi-company organization with 20+ locations. Infrastructure, identity, and security." />
   <meta name="theme-color" content="#060c12" />
-  <meta property="og:title" content="Evan Barth" />
-  <meta property="og:description" content="IT Director. Infrastructure, identity, and security." />
-  <meta property="og:type" content="website" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='18' fill='%23060c12'/%3E%3Cpath d='M40 6 70 23v34L40 74 10 57V23Z' fill='none' stroke='%230593C6' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M34.8 32.7H26.7V47.3H34.8M26.7 40H33.1 M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='square'/%3E%3Cpath d='M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6' fill='none' stroke='%23D83995' stroke-width='2.4'/%3E%3C/svg%3E" />
+  <link rel="canonical" href="https://evanbarth.com/" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@700&display=swap" rel="stylesheet" />
+  <!-- Link previews (LinkedIn, Slack, iMessage, etc.). The image is og.png next to this file. -->
+  <meta property="og:site_name" content="Evan Barth" />
+  <meta property="og:title" content="Evan Barth — IT Director" />
+  <meta property="og:description" content="IT Director in Springfield, Missouri. Infrastructure, identity, and security." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://evanbarth.com/" />
+  <meta property="og:image" content="https://evanbarth.com/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Evan Barth, IT Director. The EB hexagon logo on a dark navy background." />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Tells search engines who this page is about. Only facts that are already on the page. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Evan Barth",
+    "url": "https://evanbarth.com/",
+    "jobTitle": "IT Director",
+    "address": { "@type": "PostalAddress", "addressLocality": "Springfield", "addressRegion": "MO", "addressCountry": "US" },
+    "sameAs": ["https://www.linkedin.com/in/evanbarth/", "https://github.com/evanbarth"]
+  }
+  </script>
+
+  <!-- Fonts live in fonts/ next to this file, so nothing is loaded from Google.
+       These two are on screen first (my name and the body text), so fetch them right away. -->
+  <link rel="preload" href="fonts/orbitron-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
 
   <script>
     // Runs before first paint so nothing flashes: decides whether to show my boot
@@ -34,12 +61,39 @@
   </script>
 
   <style>
+    /* ---------- Fonts, self-hosted. Each file is the Latin part of the font (one file covers
+       every weight I use). unicode-range tells the browser which characters the file has,
+       so anything else (arrows, block characters) falls through to a system font. ---------- */
+    @font-face {
+      font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 500; font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    /* Extended Latin: this is the file with ₿ in it. The browser only downloads it when one
+       of its characters is actually on screen (the bitcoin theme toast, the btc command). */
+    @font-face {
+      font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 500; font-display: swap;
+      src: url("fonts/jetbrains-mono-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Space Grotesk"; font-style: normal; font-weight: 500 700; font-display: swap;
+      src: url("fonts/space-grotesk-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Orbitron"; font-style: normal; font-weight: 700; font-display: swap;
+      src: url("fonts/orbitron-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
     :root {
       --a: 124 242 196;            /* my mint accent, as RGB */
       --b: 167 139 250;            /* violet glow that sits behind it */
       --bg: #0c0d10;
       --fg: #eceef2;
       --muted: #8a909c;
+      --faint: #767c87;            /* quietest text (footer, boot hint): still 4.5:1 on the background */
       --accent: rgb(var(--a));
       --accent-2: rgb(var(--b));
       --mx: 50vw;
@@ -112,7 +166,7 @@
       transition: transform 0.25s ease-out, filter 0.4s;
     }
     .mark:hover { filter: drop-shadow(0 0 26px rgb(var(--a) / 0.55)); }
-    .mark:focus-visible { outline: 1px dashed var(--accent); outline-offset: 6px; border-radius: 10px; }
+    .mark:focus-visible { outline: 2px dashed var(--accent); outline-offset: 6px; border-radius: 10px; }
 
     /* ---------- "Click me" hint: wiggle + golden hex rings until someone finds the logo ---------- */
     .mark-wrap { position: relative; width: fit-content; margin: 0 auto; }
@@ -193,8 +247,9 @@
       font-size: 12.5px;
       color: var(--muted);
     }
-    .theme-btn { all: unset; cursor: pointer; padding: 6px; display: inline-flex; border-radius: 50%; }
-    .theme-btn:focus-visible { outline: 1px dashed var(--accent); }
+    /* 9px padding makes a 25px tap target; the -3px margin keeps the dot exactly where it was */
+    .theme-btn { all: unset; cursor: pointer; padding: 9px; margin: -3px; display: inline-flex; border-radius: 50%; }
+    .theme-btn:focus-visible { outline: 2px dashed var(--accent); }
     .pulse { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); transition: background 0.4s, transform 0.2s; }
     .theme-btn:hover .pulse { transform: scale(1.5); }
     .pulse::after {
@@ -239,10 +294,12 @@
     ul { list-style: none; }
     li { padding: 1px 0; }
     .hl { color: var(--accent); font-weight: 500; text-shadow: 0 0 12px rgb(var(--a) / 0.5); }
-    li.prompt::before { content: "› "; color: var(--accent); opacity: 0.7; }
+    /* The second `content` line gives the marker empty alt text so screen readers skip it;
+       browsers that don't know that syntax ignore it and use the first line. */
+    li.prompt::before { content: "› "; content: "› " / ""; color: var(--accent); opacity: 0.7; }
     /* Detail line under the item above it: indented to line up with that item's text */
     li.sub { padding-left: 2ch; color: var(--muted); }
-    li.sub::before { content: "↳ "; color: var(--accent); opacity: 0.8; }
+    li.sub::before { content: "↳ "; content: "↳ " / ""; color: var(--accent); opacity: 0.8; }
 
     /* Little hex between IT Director and Girl Dad, same shape as my logo */
     .sep { display: inline-block; width: 8px; height: 8px; margin: 0 7px; vertical-align: 0; }
@@ -285,7 +342,7 @@
     .link:hover svg, .link:focus-visible svg { transform: scale(1.15) rotate(-6deg); filter: drop-shadow(0 0 6px var(--c)); }
     .link:hover .label, .link:focus-visible .label { background-size: 100% 1px; }
     .link:hover .arrow, .link:focus-visible .arrow { opacity: 1; transform: translate(0, 0); }
-    .link:focus-visible { outline: 1px dashed var(--c); outline-offset: 4px; border-radius: 2px; }
+    .link:focus-visible { outline: 2px dashed var(--c); outline-offset: 4px; border-radius: 2px; }
 
     .hint { font-size: 11px; color: var(--muted); margin-left: 4px; transition: opacity 0.3s; }
     .revealed .hint { opacity: 0; width: 0; overflow: hidden; margin: 0; }
@@ -308,7 +365,7 @@
     footer {
       margin-top: 52px;
       font-size: 11px;
-      color: #565b66;
+      color: var(--faint);
       text-align: center;
       display: flex;
       justify-content: center;
@@ -404,7 +461,7 @@
     .boot-log div { white-space: pre-wrap; animation: fade 0.12s forwards; opacity: 0; }
     .boot .ok { color: var(--accent); }
     .boot .hi { color: var(--fg); font-weight: 500; }
-    .boot .skip { position: absolute; bottom: 28px; font-size: 11px; color: #4a4f59; }
+    .boot .skip { position: absolute; bottom: 28px; font-size: 11px; color: var(--faint); }
 
     /* ---------- Terminal ---------- */
     .term {
@@ -446,19 +503,26 @@
     }
     .term-bar .dots { display: flex; gap: 6px; }
     .term-bar .dots i { width: 11px; height: 11px; border-radius: 50%; background: #3a3e47; }
-    .term-bar .dots i:first-child { background: #ff5f57; cursor: pointer; }
     .term-bar .dots i:nth-child(2) { background: #febc2e; }
     .term-bar .dots i:nth-child(3) { background: #28c840; }
+    /* The red dot is the close button. It looks the same as before, but the invisible
+       ::before gives it a finger-sized (39px) tap area. */
+    .term-x { all: unset; position: relative; width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; cursor: pointer; }
+    .term-x::before { content: ""; position: absolute; inset: -14px; }
+    .term-x:focus-visible { outline: 2px dashed #ff5f57; outline-offset: 3px; }
     .term-bar .title { flex: 1; text-align: center; margin-right: 45px; }
     .term-body { flex: 1; overflow-y: auto; padding: 12px 16px 16px; scrollbar-width: thin; scrollbar-color: #333 transparent; }
     .term-body div { white-space: pre-wrap; word-break: break-word; }
-    .term form { display: flex; gap: 8px; }
+    .term form { display: flex; align-items: baseline; gap: 8px; }
     .term input {
       all: unset;
       flex: 1;
+      min-width: 0;   /* lets the field shrink on narrow phones instead of pushing the terminal sideways */
       color: var(--fg);
       caret-color: var(--accent);
     }
+    /* Phones: iOS Safari zooms the whole page when you tap into a field smaller than 16px */
+    @media (pointer: coarse) { .term input { font-size: 16px; } }
     .ps1 { color: var(--accent); white-space: nowrap; }
     .t-dim { color: var(--muted); }
     .t-acc { color: var(--accent); }
@@ -492,9 +556,36 @@
       section { margin-bottom: 8px; }
     }
 
+    /* ---------- Laptops and short desktop windows: same idea as the phone rules above.
+       At 950px tall and up nothing changes. Below that the spacing shrinks smoothly
+       (reaching its tightest at 760px) so Where and the footer stay on screen,
+       then two steps trim the type for really short windows. ---------- */
+    @media (min-width: 601px) and (max-height: 949px) {
+      main { padding: clamp(24px, calc(25.26svh - 168px), 72px) 24px; }
+      .status { margin-bottom: clamp(16px, calc(14.74svh - 96px), 44px); }
+      section { margin-bottom: clamp(14px, calc(10.53svh - 66px), 34px); }
+      footer { margin-top: clamp(18px, calc(17.89svh - 118px), 52px); }
+    }
+    @media (min-width: 601px) and (max-height: 745px) {
+      main { padding: 16px 24px; }
+      body { line-height: 1.5; }
+      .mark { width: 60px; height: 60px; margin-bottom: 14px; }
+      h2 { font-size: 1.3rem; line-height: 1.3; margin-bottom: 4px; }
+    }
+    @media (min-width: 601px) and (max-height: 640px) {
+      body { font-size: 14px; line-height: 1.42; }
+      .mark { width: 50px; height: 50px; margin-bottom: 8px; }
+      h1 { font-size: 2.5rem; }
+      h2 { font-size: 1.15rem; }
+      .status { margin-bottom: 10px; }
+      section { margin-bottom: 8px; }
+      .link { padding: 2px 0; }
+      footer { margin-top: 12px; }
+    }
+
     /* ---------- Sky: my default look. Dark navy-black with sky blue + hot pink.
        Everything else (mint, violet, amber, rose, ice) uses the base styles above. ---------- */
-    html[data-theme="sky"] { --bg:#060c12; --fg:#F1F6F9; --muted:#85959f; --a:5 147 198; --b:216 57 149; }
+    html[data-theme="sky"] { --bg:#060c12; --fg:#F1F6F9; --muted:#85959f; --faint:#727e8a; --a:5 147 198; --b:216 57 149; }
     html[data-theme="sky"] body {
       background:
         radial-gradient(42% 38% at 18% 78%, rgba(216,57,149,.12), transparent 70%),
@@ -520,7 +611,6 @@
     html[data-theme="sky"] .link[data-link="linkedin"] { --c:#2fb4e6 !important; }
     html[data-theme="sky"] .link[data-link="github"] { --c:#f06bb3 !important; }
     html[data-theme="sky"] #email { --c:var(--fg); }
-    html[data-theme="sky"] footer { color:#4f5862; }
     html[data-theme="sky"] .cursor { background:#D83995; }
     html[data-theme="sky"] .term-open { border-color:rgba(5,147,198,.5); color:#5cc7ef; background:rgba(5,147,198,.06); }
     html[data-theme="sky"] .term-open:hover, html[data-theme="sky"] .term-open:focus-visible { background:linear-gradient(90deg,#0593C6,#D83995); color:#fff; box-shadow:0 0 24px rgba(216,57,149,.4); }
@@ -567,7 +657,7 @@
     @keyframes flash { 0% { opacity: 0; } 12% { opacity: 1; } 100% { opacity: 0; } }
 
     /* ---------- Bitcoin orange: official #F7931A on warm near-black, gold as the second color ---------- */
-    html[data-theme="bitcoin"] { --bg:#0b0907; --fg:#F5F1EB; --muted:#9a8f84; --a:247 147 26; --b:255 194 61; }
+    html[data-theme="bitcoin"] { --bg:#0b0907; --fg:#F5F1EB; --muted:#9a8f84; --faint:#857a6f; --a:247 147 26; --b:255 194 61; }
     html[data-theme="bitcoin"] body {
       background:
         radial-gradient(42% 38% at 18% 80%, rgba(247,147,26,.10), transparent 70%),
@@ -591,7 +681,6 @@
     html[data-theme="bitcoin"] .link[data-link="linkedin"] { --c:#f7931a !important; }
     html[data-theme="bitcoin"] .link[data-link="github"] { --c:#ffc23d !important; }
     html[data-theme="bitcoin"] #email { --c:var(--fg); }
-    html[data-theme="bitcoin"] footer { color:#5a524a; }
     html[data-theme="bitcoin"] .cursor { background:#f7931a; }
     html[data-theme="bitcoin"] .term-open { border-color:rgba(247,147,26,.5); color:#ffb04a; background:rgba(247,147,26,.06); }
     html[data-theme="bitcoin"] .term-open:hover, html[data-theme="bitcoin"] .term-open:focus-visible { background:linear-gradient(90deg,#f7931a,#ffc23d); color:#1a1206; box-shadow:0 0 24px rgba(247,147,26,.45); }
@@ -618,7 +707,7 @@
       transition: box-shadow .3s;
     }
     .btc-price:hover { box-shadow: 0 0 34px rgba(247,147,26,.45), 0 4px 18px rgba(0,0,0,.45); }
-    .btc-price:focus-visible { outline: 1px dashed #f7931a; outline-offset: 3px; }
+    .btc-price:focus-visible { outline: 2px dashed #f7931a; outline-offset: 3px; }
     @keyframes tk-spin { to { --tk-ang: 360deg; } }
     @keyframes tk-in { from { transform: translateY(-70px) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
     .tk-inner {
@@ -678,7 +767,7 @@
 
   <div class="boot" id="boot" aria-hidden="true">
     <div class="boot-log" id="boot-log"></div>
-    <div class="skip">press any key to skip</div>
+    <div class="skip">tap or press any key to skip</div>
   </div>
 
   <main>
@@ -695,7 +784,8 @@
       </svg>
       </div>
 
-      <h1 id="name" data-text="Evan Barth">Evan Barth</h1>
+      <!-- Screen readers and search engines get the plain name; the scramble effect only touches the hidden-from-them copy -->
+      <h1 id="name"><span class="sr-only">Evan Barth</span><span id="name-text" data-text="Evan Barth" aria-hidden="true">Evan Barth</span></h1>
 
       <div class="status rise" style="--i:0">
         <button class="theme-btn" id="theme-btn" type="button" aria-label="Change theme" title="Change theme"><span class="pulse"></span></button>
@@ -752,13 +842,13 @@
     </div>
   </main>
 
-  <div class="term" id="term" role="dialog" aria-label="Terminal" hidden>
+  <div class="term" id="term" role="dialog" aria-modal="true" aria-label="Terminal" hidden>
     <div class="term-bar">
-      <span class="dots"><i id="term-close" title="Close"></i><i></i><i></i></span>
+      <span class="dots"><button class="term-x" id="term-close" type="button" aria-label="Close terminal" title="Close"></button><i></i><i></i></span>
       <span class="title">guest@evanbarth: ~</span>
     </div>
     <div class="term-body" id="term-body">
-      <div id="term-out"></div>
+      <div id="term-out" role="log" aria-live="polite"></div>
       <form id="term-form" autocomplete="off">
         <label class="ps1" for="term-in">guest@evanbarth:~$</label>
         <input id="term-in" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Terminal input" />
@@ -883,8 +973,8 @@
       });
     }
 
-    const nameEl = $("#name");
-    if (!reduce) nameEl.textContent = nameEl.dataset.text.replace(/\S/g, rand);
+    const nameEl = $("#name"), nameText = $("#name-text");   // nameEl = the <h1> (glitch), nameText = the visible letters (scramble)
+    if (!reduce) nameText.textContent = nameText.dataset.text.replace(/\S/g, rand);
 
     /* ---------- Clock: my local time, Central ---------- */
     const fmt = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: CONFIG.tz });
@@ -1196,7 +1286,6 @@
       } catch {}
       return price == null ? null : { price, change, ref, src };
     }
-    async function getPrice() { return (await getQuote())?.price ?? null; }
 
     // Odometer: each digit is a 0–9 column that slides to the right number
     function setDigits(str) {
@@ -1267,14 +1356,26 @@
 
     function loop(t) { draw(t); requestAnimationFrame(loop); }
 
-    addEventListener("resize", resize);
+    // Dragging a window edge fires resize many times a second; rebuild the grid once per frame at most
+    let resizeQueued = false;
+    addEventListener("resize", () => {
+      if (resizeQueued) return;
+      resizeQueued = true;
+      requestAnimationFrame(() => { resizeQueued = false; resize(); });
+    });
     addEventListener("pointermove", (e) => {
       mouse.tx = e.clientX; mouse.ty = e.clientY;
       root.style.setProperty("--mx", e.clientX + "px");
       root.style.setProperty("--my", e.clientY + "px");
       if (finePointer && !reduce) tilt(e);
     });
-    addEventListener("pointerleave", () => { mouse.tx = mouse.ty = -9999; });
+    // Let go of the dots when the cursor leaves the page or a finger lifts, so they don't stay lit.
+    // (pointerleave doesn't bubble, so it has to be on <html>; on window it never fires.)
+    const releaseDots = () => { mouse.tx = mouse.ty = mouse.x = mouse.y = -9999; };
+    root.addEventListener("pointerleave", releaseDots);
+    const touchEnd = (e) => { if (e.pointerType === "touch") releaseDots(); };
+    addEventListener("pointerup", touchEnd);
+    addEventListener("pointercancel", touchEnd);
     // Single tap = shockwave. Double-click / double-tap anywhere that isn't a link,
     // button or my logo = a quick matrix rain that spreads out from where you tapped.
     let lastTap = { t: 0, x: 0, y: 0 };
@@ -1495,9 +1596,16 @@
       entry ? entry[1](args) : print(`<span class="t-err">command not found: ${esc(cmd)}</span> <span class="t-dim">— try 'help'</span>`);
     }
 
+    // While the terminal is open the page behind it is inert: nothing back there can be
+    // focused or clicked, and screen readers stay inside the terminal.
+    const pageEl = $("main");
+    let termIsOpen = false, closeTimer;
     function openTerm() {
+      clearTimeout(closeTimer);   // in case it's reopened while still fading out
+      termIsOpen = true;
+      pageEl.inert = true;
       term.hidden = false;
-      requestAnimationFrame(() => term.classList.add("open"));
+      requestAnimationFrame(() => { if (termIsOpen) term.classList.add("open"); });
       if (!greeted) {
         greeted = true;
         print(`<span class="t-acc">Welcome to ${esc(CONFIG.host)}</span>`);
@@ -1507,13 +1615,18 @@
       setTimeout(() => termIn.focus(), 50);
     }
     function closeTerm() {
+      if (!termIsOpen) return;
+      termIsOpen = false;
+      pageEl.inert = false;
       term.classList.remove("open");
-      setTimeout(() => (term.hidden = true), 250);
+      closeTimer = setTimeout(() => (term.hidden = true), 250);
       $("#term-open").focus({ preventScroll: true });
     }
 
     $("#term-open").addEventListener("click", openTerm);
     $("#term-close").addEventListener("click", closeTerm);
+    // Tap or click anywhere outside the terminal closes it (phones have no Esc key)
+    addEventListener("pointerdown", (e) => { if (termIsOpen && !e.target.closest("#term")) closeTerm(); });
     termBody.addEventListener("click", () => { if (!getSelection().toString()) termIn.focus(); });
     $("#term-form").addEventListener("submit", (e) => { e.preventDefault(); run(termIn.value); termIn.value = ""; });
     termIn.addEventListener("keydown", (e) => {
@@ -1528,14 +1641,15 @@
       }
     });
     addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !term.hidden) return closeTerm();
-      if ((e.key === "/" || e.key === "`") && term.hidden && !e.target.closest("input, textarea")) { e.preventDefault(); openTerm(); }
+      if (e.key === "Escape" && termIsOpen) return closeTerm();
+      // Plain / or ` only: leave Ctrl+/ and friends to the browser
+      if ((e.key === "/" || e.key === "`") && !e.ctrlKey && !e.metaKey && !e.altKey && !termIsOpen && !e.target.closest("input, textarea")) { e.preventDefault(); openTerm(); }
     });
 
     /* ---------- Boot sequence, first visit per session. To kill it,
        delete the sessionStorage "booted" check in the <head> script. ---------- */
     function intro() {
-      setTimeout(() => scramble(nameEl, nameEl.dataset.text, 1100), 350);
+      setTimeout(() => scramble(nameText, nameText.dataset.text, 1100), 350);
       setTimeout(() => {
         const r = mark.getBoundingClientRect();
         ripple(r.left + r.width / 2, r.top + r.height / 2);
@@ -1567,10 +1681,12 @@
         boot.classList.add("done");
         root.classList.remove("booting");
         setTimeout(() => boot.remove(), 600);
-        removeEventListener("keydown", finish, true);
-        removeEventListener("pointerdown", finish, true);
+        removeEventListener("keydown", skip, true);
+        removeEventListener("pointerdown", skip, true);
         intro();
       };
+      // The key or tap that skips the boot screen stops here, so pressing / to skip doesn't also open the terminal
+      const skip = (e) => { e.stopPropagation(); finish(); };
       const step = () => {
         if (i >= BOOT.length) { timer = setTimeout(finish, 450); return; }
         const [cls, text] = BOOT[i++];
@@ -1579,8 +1695,8 @@
         log.appendChild(div);
         timer = setTimeout(step, cls === "ok" ? 95 + Math.random() * 90 : 140);
       };
-      addEventListener("keydown", finish, true);
-      addEventListener("pointerdown", finish, true);
+      addEventListener("keydown", skip, true);
+      addEventListener("pointerdown", skip, true);
       step();
     } else {
       intro();

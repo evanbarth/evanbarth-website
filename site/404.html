@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Page not found · Evan Barth</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#060c12" />
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <style>
+    /* Same Sky look as the main page, with no scripts and no outside requests. */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: #F1F6F9;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 15px;
+      line-height: 1.65;
+      text-align: center;
+      background:
+        radial-gradient(42% 38% at 18% 78%, rgba(216,57,149,.12), transparent 70%),
+        radial-gradient(40% 40% at 85% 18%, rgba(5,147,198,.13), transparent 70%),
+        #060c12;
+      background-attachment: fixed;
+    }
+    svg { display: block; width: 76px; height: 76px; margin: 0 auto 22px; filter: drop-shadow(0 0 16px rgba(5,147,198,.28)); }
+    h1 { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 3.1rem; line-height: 1.05; letter-spacing: 0.04em; }
+    p { margin-top: 12px; color: #85959f; }
+    .ps1 { color: #0593C6; }
+    a {
+      display: inline-block;
+      margin-top: 34px;
+      padding: 6px 14px;
+      color: #5cc7ef;
+      text-decoration: none;
+      background: rgba(5,147,198,.06);
+      border: 1px solid rgba(5,147,198,.5);
+      border-radius: 999px;
+    }
+    a:hover, a:focus-visible { color: #fff; background: linear-gradient(90deg, #0593C6, #D83995); }
+    a:focus-visible { outline: 2px dashed #5cc7ef; outline-offset: 4px; }
+  </style>
+</head>
+<body>
+  <main>
+    <svg viewBox="0 0 80 80" aria-hidden="true">
+      <path d="M40 6 70 23v34L40 74 10 57V23Z" fill="none" stroke="#0593C6" stroke-width="3" stroke-linejoin="round" />
+      <path d="M40 14 63 27v26L40 66 17 53V27Z" fill="none" stroke="#D83995" stroke-width="1" />
+      <path d="M34.8 32.7H26.7V47.3H34.8M26.7 40H33.1 M42.7 47.3V32.7H49.2a3.65 3.65 0 0 1 0 7.3H42.7M42.7 40H50.2a3.65 3.65 0 0 1 0 7.3H42.7" fill="none" stroke="#F1F6F9" stroke-width="3.4" stroke-linecap="square" />
+      <path d="M45.6 27.4V31M49.4 27.4V31M45.6 49V52.6M49.4 49V52.6" fill="none" stroke="#D83995" stroke-width="1.9" />
+    </svg>
+    <h1>404</h1>
+    <p><span class="ps1">guest@evanbarth:~$</span> No such file or directory.</p>
+    <a href="/">← Back to evanbarth.com</a>
+  </main>
+</body>
+</html>
