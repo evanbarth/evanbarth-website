@@ -49,7 +49,7 @@
       var d = document.documentElement;
       try {
         if (!sessionStorage.getItem("booted") && !matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("booting");
-        var T = { sky: ["5 147 198", "216 57 149"], bitcoin: ["247 147 26", "255 194 61"], mint: ["124 242 196", "167 139 250"], violet: ["167 139 250", "124 242 196"], amber: ["251 191 36", "244 114 182"], rose: ["251 113 133", "129 140 248"], ice: ["125 211 252", "167 139 250"] };
+        var T = { sky: ["5 147 198", "216 57 149"], bitcoin: ["247 147 26", "255 194 61"], mint: ["124 242 196", "167 139 250"], violet: ["167 139 250", "124 242 196"], amber: ["251 191 36", "244 114 182"], rose: ["251 113 133", "129 140 248"], ice: ["125 211 252", "167 139 250"], midnight: ["182 223 237", "253 110 110"] };
         // Theme only sticks for this visit (survives a refresh, resets to Sky once the tab is closed).
         // Also clears the old permanently-saved theme from earlier versions of the site.
         localStorage.removeItem("theme");
@@ -267,12 +267,13 @@
     @keyframes themepeek {
       0%   { transform: scale(1);   background: var(--accent); box-shadow: none; }
       10%  { transform: scale(1.9); background: #0593C6; box-shadow: 0 0 10px #0593C6; }
-      22%  { background: #F7931A; box-shadow: 0 0 10px #F7931A; }
-      34%  { background: #7CF2C4; box-shadow: 0 0 10px #7CF2C4; }
-      46%  { background: #A78BFA; box-shadow: 0 0 10px #A78BFA; }
-      58%  { background: #FBBF24; box-shadow: 0 0 10px #FBBF24; }
-      70%  { background: #FB7185; box-shadow: 0 0 10px #FB7185; }
-      82%  { transform: scale(1.9); background: #7DD3FC; box-shadow: 0 0 10px #7DD3FC; }
+      20%  { background: #F7931A; box-shadow: 0 0 10px #F7931A; }
+      30%  { background: #7CF2C4; box-shadow: 0 0 10px #7CF2C4; }
+      40%  { background: #A78BFA; box-shadow: 0 0 10px #A78BFA; }
+      50%  { background: #FBBF24; box-shadow: 0 0 10px #FBBF24; }
+      60%  { background: #FB7185; box-shadow: 0 0 10px #FB7185; }
+      70%  { background: #7DD3FC; box-shadow: 0 0 10px #7DD3FC; }
+      82%  { transform: scale(1.9); background: #FD6E6E; box-shadow: 0 0 10px #FD6E6E; }
       100% { transform: scale(1);   background: var(--accent); box-shadow: none; }
     }
 
@@ -690,6 +691,38 @@
     html[data-theme="bitcoin"] .t-b { color:#ffc23d; }
     html[data-theme="bitcoin"] .term { background:rgba(12,10,8,.9); }
 
+    /* ---------- Midnight: deep navy with soft blue, and coral as the small accent.
+       Soft Blue #B6DFED does most of the work (logo, links, prompts). Coral #FD6E6E only
+       shows up in little touches: the inner hexagon, the heading dashes, the 20+ underline,
+       the GitHub icon, the cursor. Everything not listed here uses the base styles. ---------- */
+    html[data-theme="midnight"] { --bg:#002941; --fg:#F1F7FA; --muted:#8fb0c2; --faint:#7697a9; --a:182 223 237; --b:253 110 110; }
+    html[data-theme="midnight"] body {
+      background:
+        radial-gradient(42% 38% at 18% 80%, rgba(253,110,110,.10), transparent 70%),
+        radial-gradient(40% 40% at 85% 16%, rgba(182,223,237,.10), transparent 70%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+    html[data-theme="midnight"] body::before {
+      background:
+        radial-gradient(520px circle at var(--mx) var(--my), rgba(182,223,237,.09), transparent 60%),
+        radial-gradient(760px circle at calc(var(--mx) + 180px) calc(var(--my) + 140px), rgba(253,110,110,.06), transparent 65%);
+    }
+    html[data-theme="midnight"] h1 { background-image: linear-gradient(100deg, var(--fg) 25%, #B6DFED 42%, #FD6E6E 58%, var(--fg) 75%); }
+    html[data-theme="midnight"] .mark { filter: drop-shadow(0 0 16px rgba(182,223,237,.26)); }
+    html[data-theme="midnight"] .mark:hover { filter: drop-shadow(0 0 24px rgba(253,110,110,.45)); }
+    html[data-theme="midnight"] .mark-inner, html[data-theme="midnight"] .mark-btc { stroke:#FD6E6E; }
+    html[data-theme="midnight"] h2::before { background:#FD6E6E; box-shadow:0 0 10px rgba(253,110,110,.5); }
+    html[data-theme="midnight"] .hl { color:var(--fg); text-shadow:0 0 12px rgba(182,223,237,.45); background:linear-gradient(#FD6E6E,#FD6E6E) no-repeat 0 100%/100% 2px; }
+    html[data-theme="midnight"] .sep svg { stroke:#FD6E6E; filter:drop-shadow(0 0 4px rgba(253,110,110,.6)); }
+    html[data-theme="midnight"] li:hover .sep svg { fill:#FD6E6E; }
+    html[data-theme="midnight"] .link[data-link="linkedin"] { --c:#B6DFED !important; }
+    html[data-theme="midnight"] .link[data-link="github"] { --c:#FD6E6E !important; }
+    html[data-theme="midnight"] #email { --c:var(--fg); }
+    html[data-theme="midnight"] .cursor { background:#FD6E6E; }
+    html[data-theme="midnight"] kbd { border-color:rgba(182,223,237,.4); }
+    html[data-theme="midnight"] .term { background:rgba(0,27,44,.9); }
+
     /* ---------- Live BTC ticker (bitcoin orange theme only), pinned top-right over the page ----------
        Light sweeps around the border, the coin flips every few seconds, digits roll like an
        odometer when the price updates, and there's a live dot + 24h change. Tap it for coins. */
@@ -912,6 +945,7 @@
       amber:  { a: [251, 191, 36],  b: [244, 114, 182], grey: [200, 205, 215], bg: "#0c0d10" },
       rose:   { a: [251, 113, 133], b: [129, 140, 248], grey: [200, 205, 215], bg: "#0c0d10" },
       ice:    { a: [125, 211, 252], b: [167, 139, 250], grey: [200, 205, 215], bg: "#0c0d10" },
+      midnight:{ a: [182, 223, 237], b: [253, 110, 110], grey: [150, 185, 205], bg: "#002941" },
     };
 
     const root = document.documentElement;
@@ -926,6 +960,8 @@
        If I add one here, add it to the <head> script too or it flashes on load. ---------- */
     let themeName = THEMES[root.dataset.theme] ? root.dataset.theme : "sky";
     let ACC = THEMES[themeName].a, ACC2 = THEMES[themeName].b, GREY = THEMES[themeName].grey;
+    // After a refresh in another theme, make the phone's browser bar match it too (not just on a theme change)
+    document.querySelector('meta[name="theme-color"]').content = THEMES[themeName].bg;
     const THEME_ALIASES = { orange: "bitcoin", btc: "bitcoin" };
     function setTheme(name, celebrate = false) {
       name = THEME_ALIASES[name] || name;
